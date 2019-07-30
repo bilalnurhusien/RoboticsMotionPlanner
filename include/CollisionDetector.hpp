@@ -19,15 +19,17 @@ class CollisionDetector
    
 public:
     
-    explicit CollisionDetector(const std::vector<sf::ConvexShape> polygonObstacles);
+    explicit CollisionDetector(const std::vector<sf::CircleShape> polygonObstacles,
+                               const sf::CircleShape& robot);
+
     ~CollisionDetector();
 
     /**
-     * @brief Detects if point intersects any of the polygon obstacles
-     * @param p
+     * @brief Detects if robot intersects any of the polygon obstacles
+     * @param robot
      * @return true or false
      */
-    bool IsCollision(point_type p);
+    bool IsCollision(const point_type& p);
     /**
      * @brief Detects if line segment intersects any of the polygon obstacles
      * @param p1 - point 1
@@ -38,5 +40,6 @@ public:
 
 private:
 std::vector<polygon_type> m_collisionObstacles;
+sf::CircleShape m_robot;
 };
 

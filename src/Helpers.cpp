@@ -344,7 +344,8 @@ bool IsInWorkSpace(float x, float y)
  * @param robot - robot
  * @param p - point in which to center
  */
-void CenterRobotPosition(sf::CircleShape& robot, point_type p, float radiusSize)
+void CenterRobotPosition(sf::CircleShape& robot, point_type p)
 {
-    robot.setPosition(p.get<0>() - radiusSize, p.get<1>() - radiusSize);
+    robot.setPosition(p.get<0>(), p.get<1>());
+    robot.setOrigin(robot.getRadius(), robot.getRadius());
 }

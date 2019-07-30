@@ -27,7 +27,7 @@ void GetRoadMap(MotionPlanning& motionPlanning,
     for (uint32_t i = 0; i  < vertices.size(); ++i)
     {
         roadMap.push_back(sf::CircleShape(DotRadiusSize));
-        CenterRobotPosition(roadMap[i], vertices[i].p, DotRadiusSize);
+        CenterRobotPosition(roadMap[i], vertices[i].p);
         for (uint32_t j = 0; j < vertices[i].neighbors.size(); ++j)
         {
             edges.push_back(
@@ -78,14 +78,12 @@ int32_t main(int argc, char *argv[])
     }
 
     /* Position dot at center of robot */
-    robotDot.setPosition(DotStartPosX - DotRadiusSize, DotStartPosY - DotRadiusSize);
+    CenterRobotPosition(robot, point_type(DotStartPosX, DotStartPosY));
+    CenterRobotPosition(robotDot, point_type(DotStartPosX, DotStartPosY));
     robotDot.setFillColor(robot.getFillColor());
-
-    /* Calculate Minkowski difference of all obstacles */
-    MinkowskiDifference(robot, polygonObstacles, minkowskiObstacles);
     
     /* Create motion planning roadmap */
-    shared_ptr<CollisionDetector> pCollisionDetector = make_shared<CollisionDetector>(minkowskiObstacles);
+    shared_ptr<CollisionDetector> pCollisionDetector = make_shared<CollisionDetector>(polygonObstacles, robot);
     MotionPlanning motionPlanning(pCollisionDetector);
 
     bool result = motionPlanning.CreateRoadMap(maxNumNodes, maxOfNumNeighbors);
@@ -156,9 +154,11 @@ int32_t main(int argc, char *argv[])
                         continue;
                     }
                     
+                    cout << "New point: " << position.x << " " << position.y << " not a collision " << endl;
+                    
                     list <point_type> new_path = motionPlanning.GetShortestPath(
                                                         point_type(robotDot.getPosition().x, robotDot.getPosition().y),
-                                                        point_type(position.x + DotRadiusSize, position.y + DotRadiusSize));
+                                                        point_type(position.x, position.y));
 
                     if (!new_path.empty())
                     {
@@ -181,8 +181,8 @@ int32_t main(int argc, char *argv[])
                 point_type p = path.back();
                 path.pop_back();
                 /* Center robot around this new point */
-                CenterRobotPosition(robotDot, p, DotRadiusSize);
-                CenterRobotPosition(robot, p, ShapeRadiusSize);
+                CenterRobotPosition(robotDot, p);
+                CenterRobotPosition(robot, p);
                 clock.restart();
                 window.clear();
             }
@@ -219,19 +219,29 @@ int32_t main(int argc, char *argv[])
         else
         {
             text.setString("Robot");
-            text.setPosition(robot.getPosition().x + ShapeRadiusSize, robot.getPosition().y + ShapeRadiusSize);
+            text.setPosition(robot.getPosition().x, robot.getPosition().y);
             window.draw(robot);
             window.draw(text);
-            
-            for (uint32_t i = 0; i < polygonObstacles.size(); ++i)
+            for (uint32_t i = 0; i < robot.getPointCount(); ++i)
             {
-                window.draw(polygonObstacles[i]);
-                text.setString("Obstacle" + to_string(i));
-                text.setPosition(polygonObstacles[i].getPosition().x + ShapeRadiusSize, polygonObstacles[i].getPosition().y + ShapeRadiusSize);
+                float x = robot.getPosition().x + robot.getPoint(i).x;
+                float y = robot.getPosition().y + robot.getPoint(i).y;
+                text.setPosition(x - robot.getRadius(), y - robot.getRadius());
+
+                text.setString(ToStringSetPrecision(x, 0) + ", " + ToStringSetPrecision(y, 0));
                 window.draw(text);
             }
+
         }
-    
+        
+        for (uint32_t i = 0; i < polygonObstacles.size(); ++i)
+        {
+            window.draw(polygonObstacles[i]);
+            text.setString("Obstacle" + to_string(i));
+            text.setPosition(polygonObstacles[i].getPosition().x + ShapeRadiusSize, polygonObstacles[i].getPosition().y + ShapeRadiusSize);
+            window.draw(text);
+        }
+
         window.display();
     }
 

@@ -94,4 +94,4 @@ std::string ToStringSetPrecision(const T a_value, const int n = 4)
  * @param robot - robot
  * @param p - point in which to center
  */
-void CenterRobotPosition(sf::CircleShape& robot, point_type p, float radiusSize);
+void CenterRobotPosition(sf::CircleShape& robot, point_type p);
