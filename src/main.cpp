@@ -56,11 +56,14 @@ int32_t main(int argc, char *argv[])
     list<point_type> path;
     sf::Clock clock;
 
-    uint32_t maxNumNodes = 60;
+    uint32_t maxNumNodes = 100;
+    float minDistance = 10.f;
     uint32_t maxOfNumNeighbors = 5;
 
     bool displayConfigSpace = false;
     bool fullScreen = false;
+    bool displayPointLocations = false;
+    bool displayObstacles = true;
 
     /* Process arguments */
     if (!ProcessArguments(argc, argv, robot, polygonObstacles, fullScreen))
@@ -78,7 +81,6 @@ int32_t main(int argc, char *argv[])
     }
 
     /* Position dot at center of robot */
-    CenterRobotPosition(robot, point_type(DotStartPosX, DotStartPosY));
     CenterRobotPosition(robotDot, point_type(DotStartPosX, DotStartPosY));
     robotDot.setFillColor(robot.getFillColor());
     
@@ -86,7 +88,7 @@ int32_t main(int argc, char *argv[])
     shared_ptr<CollisionDetector> pCollisionDetector = make_shared<CollisionDetector>(polygonObstacles, robot);
     MotionPlanning motionPlanning(pCollisionDetector);
 
-    bool result = motionPlanning.CreateRoadMap(maxNumNodes, maxOfNumNeighbors);
+    bool result = motionPlanning.CreateRoadMap(maxNumNodes, maxOfNumNeighbors, minDistance);
     if (!result)
     {
         cout << "Failed to create roadmap";
@@ -137,13 +139,24 @@ int32_t main(int argc, char *argv[])
                        text = static_cast<char>(event.text.unicode);
                     }
                 }
-                if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+                if (text == Char_P)
+                {
+                    displayPointLocations = !displayPointLocations;
+                    window.clear();
+                }
+                else if (text == Char_O)
+                {
+                    displayObstacles = !displayObstacles;
+                    displayPointLocations = false;
+                    window.clear();
+                }
+                else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
                 {
                     displayConfigSpace = !displayConfigSpace;
                     window.clear();                    
                 }
                 else if ((sf::Mouse::isButtonPressed(sf::Mouse::Left)) ||
-                         (text == Space_Char))
+                         (text == Char_Space))
                 {
                     sf::Vector2i position = sf::Mouse::getPosition(window);
                   
@@ -203,8 +216,8 @@ int32_t main(int argc, char *argv[])
                 sf::Vector2f coord = roadMapVertices[i].getPosition();
 
                 /* Write coordinates above each roadmap vertex */
-                text.setPosition(coord.x - DotRadiusSize, coord.y - 2 * DotRadiusSize);
-                text.setString(ToStringSetPrecision(coord.x - DotRadiusSize, 0) + ", " + ToStringSetPrecision(coord.y - DotRadiusSize, 0));
+                text.setPosition(coord.x - DotRadiusSize, coord.y - 3 * DotRadiusSize);
+                text.setString(ToStringSetPrecision(coord.x, 0) + ", " + ToStringSetPrecision(coord.y, 0));
                 window.draw(text);
                 window.draw(roadMapVertices[i]);
             }
@@ -222,24 +235,42 @@ int32_t main(int argc, char *argv[])
             text.setPosition(robot.getPosition().x, robot.getPosition().y);
             window.draw(robot);
             window.draw(text);
-            for (uint32_t i = 0; i < robot.getPointCount(); ++i)
+            
+            if (displayPointLocations)
             {
-                float x = robot.getPosition().x + robot.getPoint(i).x;
-                float y = robot.getPosition().y + robot.getPoint(i).y;
-                text.setPosition(x - robot.getRadius(), y - robot.getRadius());
+                for (uint32_t i = 0; i < robot.getPointCount(); ++i)
+                {
+                    float x = robot.getPosition().x + robot.getPoint(i).x;
+                    float y = robot.getPosition().y + robot.getPoint(i).y;
+                    text.setPosition(x - robot.getRadius(), y - robot.getRadius());
 
-                text.setString(ToStringSetPrecision(x, 0) + ", " + ToStringSetPrecision(y, 0));
-                window.draw(text);
+                    text.setString(ToStringSetPrecision(x, 0) + ", " + ToStringSetPrecision(y, 0));
+                    window.draw(text);
+                }
             }
-
         }
-        
-        for (uint32_t i = 0; i < polygonObstacles.size(); ++i)
+
+        if (displayObstacles)
         {
-            window.draw(polygonObstacles[i]);
-            text.setString("Obstacle" + to_string(i));
-            text.setPosition(polygonObstacles[i].getPosition().x + ShapeRadiusSize, polygonObstacles[i].getPosition().y + ShapeRadiusSize);
-            window.draw(text);
+            for (uint32_t i = 0; i < polygonObstacles.size(); ++i)
+            {
+                window.draw(polygonObstacles[i]);
+                text.setString("Obstacle" + to_string(i));
+                text.setPosition(polygonObstacles[i].getPosition().x, polygonObstacles[i].getPosition().y);
+                window.draw(text);
+                
+                if (displayPointLocations)
+                {
+                    for (uint32_t j = 0; j < polygonObstacles[i].getPointCount(); ++j)
+                    {
+                        float x = polygonObstacles[i].getPosition().x + polygonObstacles[i].getPoint(j).x;
+                        float y = polygonObstacles[i].getPosition().y + polygonObstacles[i].getPoint(j).y;
+                        text.setPosition(x - polygonObstacles[i].getRadius(), y - polygonObstacles[i].getRadius());
+                        text.setString(ToStringSetPrecision(x, 0) + ", " + ToStringSetPrecision(y, 0));
+                        window.draw(text);
+                    }
+                }
+            }
         }
 
         window.display();

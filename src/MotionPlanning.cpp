@@ -68,7 +68,7 @@ void MotionPlanning::SelectRandomCoordinate(uint32_t& x, uint32_t& y)
     y = rand() % ((uint32_t)WorkSpaceSizeY);
 }
 
-bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeighbors)
+bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeighbors, float minDistance)
 {
     //
     // Increment by one since boost::rtree treats each point as a neighbor of itself
@@ -77,7 +77,6 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
 
     const uint32_t MaxTotalRetries = 50;
     const uint32_t MaxRandomSelectTries = 20;
-    const float MinDistance = 80.f;
     uint32_t totalRetries = 0;
     bool success = false;
     m_rtree.clear();
@@ -109,12 +108,12 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
 
                 randomSelectTries++;
             } while ((collision ||
-                     (distance < MinDistance)) &&
+                     (minDistance < minDistance)) &&
                      (randomSelectTries < MaxRandomSelectTries));
 
             if ((randomSelectTries >= MaxRandomSelectTries) ||
                 (m_pCollisionDetector->IsCollision(point_type(x, y))) ||
-                (distance < MinDistance))
+                (distance < minDistance))
             {
                 break;
             }

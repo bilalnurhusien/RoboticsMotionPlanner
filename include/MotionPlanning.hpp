@@ -60,7 +60,7 @@ public:
      * @param maxNumOfNeighbors - maximum number of neighbors
      * @return true (success), false (failure)
      */
-    bool CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeighbors);
+    bool CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeighbors, float minDistance);
     
     /**
      * @brief Get road map

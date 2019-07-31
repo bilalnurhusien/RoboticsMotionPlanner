@@ -83,8 +83,7 @@ std::vector<bgm::linestring<point_type> > GetLineSegments(const sf::CircleShape&
 
 bool CollisionDetector::IsCollision(const point_type& p)
 {
-    m_robot.setPosition(p.get<0>(), p.get<1>());
-    m_robot.setOrigin(m_robot.getRadius(), m_robot.getRadius());
+    CenterRobotPosition(m_robot, p);
     
     std::vector<bgm::linestring<point_type> > robotLineSegments = GetLineSegments(m_robot);
     
