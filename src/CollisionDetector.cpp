@@ -37,8 +37,8 @@ CollisionDetector::CollisionDetector(const vector<shared_ptr<sf::Shape> >& polyg
         
         for (uint32_t j = 0; j <= verticesCount; ++j)
         {
-            sf::Vector2f vertex = polygonObstacles[i]->getPoint(j % verticesCount);
-            out << ToStringSetPrecision(polygonObstacles[i]->getPosition().x + vertex.x) << " " << ToStringSetPrecision(polygonObstacles[i]->getPosition().y + vertex.y);
+            sf::Vector2f vertex = polygonObstacles[i]->getTransform().transformPoint(polygonObstacles[i]->getPoint(j % verticesCount).x, polygonObstacles[i]->getPoint(j % verticesCount).y);
+            out << ToStringSetPrecision(vertex.x) << " " << ToStringSetPrecision(vertex.y);
             
             if (j != verticesCount)
             {
@@ -74,8 +74,8 @@ bool CollisionDetector::IsCollision(const point_type& p)
     
     for (uint32_t j = 0; j <= verticesCount; ++j)
     {
-        sf::Vector2f vertex = m_pRobot->getPoint(j % verticesCount);
-        out << ToStringSetPrecision(m_pRobot->getPosition().x + vertex.x) << " " << ToStringSetPrecision(m_pRobot->getPosition().y + vertex.y);
+        sf::Vector2f vertex = m_pRobot->getTransform().transformPoint(m_pRobot->getPoint(j % verticesCount).x, m_pRobot->getPoint(j % verticesCount).y);
+        out << ToStringSetPrecision(vertex.x) << " " << ToStringSetPrecision(vertex.y);
         
         if (j != verticesCount)
         {

@@ -558,8 +558,6 @@ void CenterPosition(sf::Shape* const pRobot, const point_type& p)
     }
     else if (convexShape = dynamic_cast<sf::ConvexShape*>(pRobot))
     {
-        
-
         pRobot->setOrigin(rect.width / 2.f, rect.height / 2.f);
     }
     pRobot->setPosition(p.get<0>(), p.get<1>());
