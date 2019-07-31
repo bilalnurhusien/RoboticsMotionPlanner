@@ -84,7 +84,7 @@ bool ReadFile(string fileName,
             point++;
         }
     }
-    
+
     {
         std::istringstream iss(robotPosition);
         int x, y = 0;
@@ -139,6 +139,10 @@ bool ReadFile(string fileName,
             cout << "Obstacle position: " << x << ", " << y << endl;
             CenterPosition(shape.get(), point_type(x, y, 0));
         }
+
+        sf::FloatRect rect = shape->getLocalBounds();
+
+        cout << "Center of obstacle: " << rect.width/2 << " " << rect.height/2 << endl;
 
         shape->setFillColor(sf::Color::Blue);
         polygonObstacles.push_back(shape);
@@ -545,7 +549,19 @@ bool IsInWorkSpace(float x, float y)
 void CenterPosition(sf::Shape* const pRobot, const point_type& p)
 {
     sf::FloatRect rect = pRobot->getLocalBounds();
-    pRobot->setOrigin(rect.width / 2.f, rect.height / 2.f);
+    
+    sf::CircleShape* circleShape = nullptr;
+    sf::ConvexShape* convexShape = nullptr;
+    if (circleShape = dynamic_cast<sf::CircleShape*>(pRobot))
+    {
+        pRobot->setOrigin(circleShape->getRadius(), circleShape->getRadius());
+    }
+    else if (convexShape = dynamic_cast<sf::ConvexShape*>(pRobot))
+    {
+        
+
+        pRobot->setOrigin(rect.width / 2.f, rect.height / 2.f);
+    }
     pRobot->setPosition(p.get<0>(), p.get<1>());
     pRobot->setRotation(p.get<2>());
 }
