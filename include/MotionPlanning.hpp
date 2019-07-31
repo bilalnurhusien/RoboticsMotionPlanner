@@ -60,7 +60,7 @@ public:
      * @param maxNumOfNeighbors - maximum number of neighbors
      * @return true (success), false (failure)
      */
-    bool CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeighbors, float minDistance);
+    bool CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeighbors, float minDistance, point_type robotStart);
     
     /**
      * @brief Get road map
@@ -115,7 +115,7 @@ private:
     std::shared_ptr<UndirectedGraph> m_pGraph = std::make_shared<UndirectedGraph>();
     size_t RemoveId(point_type p);
     uint32_t m_maxNumOfNeighbors;
-    
+
     /**
      * @brief Find vertex
      * @param p

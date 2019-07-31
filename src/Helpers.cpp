@@ -1,6 +1,14 @@
 #include <string.h>
 #include <fstream>
 #include <stdlib.h> 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/foreach.hpp>
+#include <string>
+#include <set>
+#include <exception>
+#include <iostream>
+namespace pt = boost::property_tree;
 
 #include "../include/Helpers.hpp"
 
@@ -35,6 +43,109 @@ bool IsNumeric(const std::string& str) {
         // if no conversion could be performed.
         return false;   
     }
+}
+
+
+bool ReadFile(string fileName,
+              shared_ptr<sf::Shape>& robot,
+              vector<shared_ptr<sf::Shape> >& polygonObstacles)
+{
+     // Create empty property tree object
+    pt::ptree tree;
+
+    // Parse the XML into the property tree.
+    pt::read_xml(fileName, tree);
+
+    // Use the throwing version of get to find the debug filename.
+    // If the path cannot be resolved, an exception is thrown.
+    tree.get<string>("config.filename");
+    string robotPosition = tree.get<string>("config.robot.position");
+    string robotPoints = tree.get<string>("config.robot.points");
+    // The data function is used to access the data stored in a node.
+    shared_ptr<sf::Shape> shape = make_shared<sf::ConvexShape>();
+    size_t n = std::count(robotPoints.begin(), robotPoints.end(), ',');
+    dynamic_cast<sf::ConvexShape*>(shape.get())->setPointCount(n);
+
+    {
+        std::istringstream iss(robotPoints);
+        int x, y, point = 0;
+        char comma;
+
+        while (!iss.eof())
+        {
+            if (!(iss >> x >> comma >> y))
+            {
+                cout << "Failed to read robot point:  " << point << endl;
+                return false;
+            }
+            
+            cout << "Robot point " << point << ": " << x << ", " << y << endl;
+            dynamic_cast<sf::ConvexShape*>(shape.get())->setPoint(point, sf::Vector2f(x, y));
+            point++;
+        }
+    }
+    
+    {
+        std::istringstream iss(robotPosition);
+        int x, y = 0;
+        char comma;
+        if (!(iss >> x >> comma >> y))
+        {
+            cout << "Failed to read robot position" << endl;
+            return false;
+        }
+        cout << "Robot position: " << x << ", " << y << endl;
+        CenterPosition(shape.get(), point_type(x, y, 0));
+    }
+
+    robot = shape;
+    robot->setFillColor(sf::Color::Green);
+
+    BOOST_FOREACH(const pt::ptree::value_type& v, tree.get_child("config.obstacles"))
+    {
+        // The data function is used to access the data stored in a node.
+        string obstaclePoints = v.second.get<string>("points");
+        string obstaclePosition = v.second.get<string>("position");
+
+        // The data function is used to access the data stored in a node.
+        shape = make_shared<sf::ConvexShape>();
+        size_t n = std::count(obstaclePoints.begin(), obstaclePoints.end(), ',');
+        dynamic_cast<sf::ConvexShape*>(shape.get())->setPointCount(n);
+
+        std::istringstream iss(obstaclePoints);
+        int x, y, point = 0;
+        char comma;
+
+        while (!iss.eof())
+        {
+            if (!(iss >> x >> comma >> y))
+            {
+                cout << "Failed to read robot point:  " << point << endl;
+                return false;
+            }
+            
+            cout << "Obstacle point " << point << ": " << x << ", " << y << endl;
+            dynamic_cast<sf::ConvexShape*>(shape.get())->setPoint(point, sf::Vector2f(x, y));
+            point++;
+        }
+     
+        {
+            std::istringstream newIss(obstaclePosition);
+            if (!(newIss >> x >> comma >> y))
+            {
+                cout << "Failed to read robot position" << endl;
+                return false;
+            }
+            cout << "Obstacle position: " << x << ", " << y << endl;
+            CenterPosition(shape.get(), point_type(x, y, 0));
+        }
+
+        shape->setFillColor(sf::Color::Blue);
+        polygonObstacles.push_back(shape);
+    }
+
+
+    return true;
 }
 
 /**
@@ -193,10 +304,27 @@ bool ProcessArguments(int argc,
 
             continue;
         }
+        else if (strcmp(argvp[i], "-i") == 0)
+        {
+            if ((i + 1) > argc)
+            {
+                cout << "Missing input file" << endl;
+                
+                return false;
+            }
+            
+            ++i;
+
+            ReadFile(argvp[i], robot, polygonObstacles);
+
+            continue;
+        }
     }
     
-    if ((robotVertexNum == -1) ||
-        (obstacleNum == -1))
+    if (((robotVertexNum == -1) &&
+         (robot->getPointCount() == 0))||
+        ((obstacleNum == -1)) &&
+        (polygonObstacles.empty()))
     {
         cout << "Robot or obstacle vertices not specified" << endl;
         return false;
@@ -205,18 +333,23 @@ bool ProcessArguments(int argc,
     /* initialize random seed: */
     srand (time(NULL));
 
-    robot = make_shared<sf::CircleShape> (ShapeRadiusSize, robotVertexNum);
-    robot->setFillColor(sf::Color::Green);
-    CenterPosition(robot.get(), point_type(RobotStartPosX, RobotStartPosY, 0));
-
-    for (uint32_t i = 0; i < obstacleNum; ++i)
-    {
-        shared_ptr<sf::Shape> pObstacle = make_shared<sf::CircleShape>(ShapeRadiusSize, rand() % MaxNumVertices + MinNumVertices);
-        pObstacle->setFillColor(sf::Color::Blue);
-        CenterPosition(pObstacle.get(), point_type(ObstacleCoordinates[i][0], ObstacleCoordinates[i][1], 0));
-        polygonObstacles.push_back(pObstacle);
+    if (robotVertexNum != -1)
+    {   
+        robot = make_shared<sf::CircleShape> (ShapeRadiusSize, robotVertexNum);
+        robot->setFillColor(sf::Color::Green);
+        CenterPosition(robot.get(), point_type(RobotStartPosX, RobotStartPosY, 0));
     }
 
+    if (obstacleNum != -1)
+    {
+        for (uint32_t i = 0; i < obstacleNum; ++i)
+        {
+            shared_ptr<sf::Shape> pObstacle = make_shared<sf::CircleShape>(ShapeRadiusSize, rand() % MaxNumVertices + MinNumVertices);
+            pObstacle->setFillColor(sf::Color::Blue);
+            CenterPosition(pObstacle.get(), point_type(ObstacleCoordinates[i][0], ObstacleCoordinates[i][1], 0));
+            polygonObstacles.push_back(pObstacle);
+        }
+    }
     return true;        
 }
 
@@ -393,10 +526,10 @@ void MergeAngleOfNormalVectors(const vector<sf::CircleShape>& vecShapes,
  */
 bool IsInWorkSpace(float x, float y)
 {
-    if ((x < WorkSpaceStartX) ||
-        (y < WorkSpaceStartY) ||
-        (x > (WorkSpaceStartX + WorkSpaceSizeX)) ||
-        (y > (WorkSpaceStartY + WorkSpaceSizeY)))
+    if ((x <= WorkSpaceStartX) ||
+        (y <= WorkSpaceStartY) ||
+        (x >= (WorkSpaceStartX + WorkSpaceSizeX)) ||
+        (y >= (WorkSpaceStartY + WorkSpaceSizeY)))
     {       
         return false;
     }

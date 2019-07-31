@@ -79,14 +79,14 @@ int32_t main(int argc, char *argv[])
     }
 
     /* Position dot at center of robot */
-    CenterPosition(robotDot.get(), point_type(RobotStartPosX, RobotStartPosY, 0));
+    CenterPosition(robotDot.get(), point_type(robot->getPosition().x, robot->getPosition().y, robot->getRotation()));
     robotDot->setFillColor(robot->getFillColor());
     
     /* Create motion planning roadmap */
     shared_ptr<CollisionDetector> pCollisionDetector = make_shared<CollisionDetector>(polygonObstacles, robot);
     MotionPlanning motionPlanning(pCollisionDetector);
 
-    bool result = motionPlanning.CreateRoadMap(maxNumNodes, maxOfNumNeighbors, minDistance);
+    bool result = motionPlanning.CreateRoadMap(maxNumNodes, maxOfNumNeighbors, minDistance, point_type(robot->getPosition().x, robot->getPosition().y, robot->getRotation()));
     if (!result)
     {
         cout << "Failed to create roadmap";

@@ -69,7 +69,7 @@ void MotionPlanning::SelectRandomCoordinate(uint32_t& x, uint32_t& y, uint32_t& 
     t = rand() % 360;
 }
 
-bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeighbors, float minDistance)
+bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeighbors, float minDistance, point_type robotStart)
 {
     //
     // Increment by one since boost::rtree treats each point as a neighbor of itself
@@ -196,7 +196,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
     }
     m_maxNumOfNeighbors = maxNumOfNeighbors;
 
-    AddVertex(point_type(RobotStartPosX, RobotStartPosY, 0));
+    AddVertex(robotStart);
 
     cout << "Num vertices: " << boost::num_vertices(*m_pGraph) << endl;
 
