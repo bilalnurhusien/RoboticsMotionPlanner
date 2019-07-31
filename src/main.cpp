@@ -139,7 +139,6 @@ int32_t main(int argc, char *argv[])
                 else if (text == Char_o)
                 {
                     displayObstacles = !displayObstacles;
-                    displayPointLocations = false;
                     window.clear();
                 }
                 else if (text == Char_i)
