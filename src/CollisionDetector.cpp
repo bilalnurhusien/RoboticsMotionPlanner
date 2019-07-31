@@ -1,28 +1,44 @@
 #include <sstream>
 #include <string>
 #include <limits> 
+#include <exception>
 
 using namespace std;
 
 #include "../include/CollisionDetector.hpp"
 #include "../include/Helpers.hpp"
 
-CollisionDetector::CollisionDetector(const std::vector<sf::CircleShape> polygonObstacles,
-                                     const sf::CircleShape& robot)
-    : m_robot(robot)
+CollisionDetector::CollisionDetector(const vector<shared_ptr<sf::Shape> >& polygonObstacles,
+                                     const shared_ptr<sf::Shape>& pRobot)
+    : m_pRobot(nullptr)
 {
+    sf::CircleShape* circleShape = nullptr;
+    sf::ConvexShape* convexShape = nullptr;
+    if (circleShape = dynamic_cast<sf::CircleShape*>(pRobot.get()))
+    {
+        m_pRobot = make_shared<sf::CircleShape>(*circleShape);
+    }
+    else if (convexShape = dynamic_cast<sf::ConvexShape*>(pRobot.get()))
+    {
+        m_pRobot = make_shared<sf::ConvexShape>(*convexShape);
+    }
+    else
+    {
+        throw "Invalid shape type";
+    }
+    
     uint32_t vectorSize = polygonObstacles.size();
     
     for (uint32_t i = 0; i < vectorSize; ++i)
     {
-        uint32_t verticesCount = polygonObstacles[i].getPointCount();
+        uint32_t verticesCount = polygonObstacles[i]->getPointCount();
         std::ostringstream out;    
         out << "POLYGON((";
         
         for (uint32_t j = 0; j <= verticesCount; ++j)
         {
-            sf::Vector2f vertex = polygonObstacles[i].getPoint(j % verticesCount);
-            out << to_string(polygonObstacles[i].getPosition().x + vertex.x) << " " << to_string(polygonObstacles[i].getPosition().y + vertex.y);
+            sf::Vector2f vertex = polygonObstacles[i]->getPoint(j % verticesCount);
+            out << ToStringSetPrecision(polygonObstacles[i]->getPosition().x + vertex.x) << " " << ToStringSetPrecision(polygonObstacles[i]->getPosition().y + vertex.y);
             
             if (j != verticesCount)
             {
@@ -48,51 +64,18 @@ CollisionDetector::~CollisionDetector()
 {
 }
 
-std::vector<bgm::linestring<point_type> > GetLineSegments(const sf::CircleShape& shape)
-{
-    std::vector<bgm::linestring<point_type> > linesegments;
-    uint32_t verticesCount = shape.getPointCount();
-        
-    for (uint32_t j = 0; j < verticesCount; ++j)
-    {
-        std::ostringstream out;
-        sf::Vector2f vertex1 = shape.getPoint(j);
-        sf::Vector2f vertex2 = shape.getPoint((j + 1) % verticesCount);
-
-        out << "LINESTRING(";
-        out << to_string(shape.getPosition().x + vertex1.x);
-        out << " ";
-        out << to_string(shape.getPosition().y + vertex1.y);
-        out << ", ";
-        out << to_string(shape.getPosition().x + vertex2.x);
-        out << " ";
-        out << to_string(shape.getPosition().y + vertex2.y);    
-        out << ")";
-#ifdef DEBUG
-        cout << "==================== " << j <<endl;
-        cout << out.str() << endl;
-        cout << "====================" <<endl;
-#endif
-        bgm::linestring<point_type> ls;
-        bg::read_wkt(out.str(), ls);
-        linesegments.push_back(ls);
-    }
-    
-    return linesegments;
-}
-
 bool CollisionDetector::IsCollision(const point_type& p)
 {
-    CenterRobotPosition(m_robot, p);
+    CenterPosition(m_pRobot.get(), p);
 
-    uint32_t verticesCount = m_robot.getPointCount();
+    uint32_t verticesCount = m_pRobot->getPointCount();
     std::ostringstream out;    
     out << "POLYGON((";
     
     for (uint32_t j = 0; j <= verticesCount; ++j)
     {
-        sf::Vector2f vertex = m_robot.getPoint(j % verticesCount);
-        out << ToStringSetPrecision(m_robot.getPosition().x + vertex.x, 3) << " " << ToStringSetPrecision(m_robot.getPosition().y + vertex.y, 3);
+        sf::Vector2f vertex = m_pRobot->getPoint(j % verticesCount);
+        out << ToStringSetPrecision(m_pRobot->getPosition().x + vertex.x) << " " << ToStringSetPrecision(m_pRobot->getPosition().y + vertex.y);
         
         if (j != verticesCount)
         {

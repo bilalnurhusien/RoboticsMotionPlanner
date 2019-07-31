@@ -16,7 +16,10 @@ void PrintHelp()
     cout << "\t-r: Number of robot vertices" << endl;
     cout << "\t-o: Number of obstacles" << endl;
     cout << "\t-f: Full screen" << endl;
-    cout << "Example:\n\t./pathplanning -r 3 -o 5 -f # For a triangle robot with 5 obstacles in full screen workspace" << endl;
+    cout << "\t-i: CSV input file" << endl;
+    cout << "\t-n: Number of nodes in PRM graph" << endl;
+    cout << "\t-d: Minimum distance between PRM nodes" << endl;
+    cout << "Example:\n\t./pathplanning -r 3 -o 5 -f -n 300 # For a triangle robot with 5 obstacles in full screen workspace with 300 nodes in PRM" << endl;
 }
 
 /* Check if a string is a numerical value */
@@ -39,10 +42,11 @@ bool IsNumeric(const std::string& str) {
   */
 bool ProcessArguments(int argc,
                       char* argvp[],
-                      sf::CircleShape& robot,
-                      vector<sf::CircleShape>& polygonObstacles,
+                      shared_ptr<sf::Shape>& robot,
+                      vector<shared_ptr<sf::Shape> >& polygonObstacles,
                       bool& fullScreen,
-                      uint32_t& numNodes)
+                      uint32_t& numNodes,
+                      float& nodeDistance)
 {
     if (argc < 3)
     {
@@ -125,12 +129,42 @@ bool ProcessArguments(int argc,
 
             continue;
         }
-
-        if (strcmp(argvp[i], "-o") == 0)
+        else if (strcmp(argvp[i], "-d") == 0)
         {
             if ((i + 1) > argc)
             {
-                cout << "Missing obstacle couunt" << endl;
+                cout << "Missing robot vertex couunt" << endl;
+
+                return false;
+            }
+
+            ++i;
+
+            if (!IsNumeric(argvp[i]))
+            {
+                cout << "Invalid numerical argument: " << argvp[i] << endl;
+
+                PrintHelp();
+
+                return false;
+            }
+
+            nodeDistance = strtof(argvp[i], nullptr);
+
+            if (nodeDistance > MaxNodeDistance)
+            {
+                cout << "Minimum node distance set to " << MaxNodeDistance << endl;
+
+                nodeDistance = MaxNodeDistance;
+            }        
+
+            continue;
+        }
+        else if (strcmp(argvp[i], "-o") == 0)
+        {
+            if ((i + 1) > argc)
+            {
+                cout << "Missing obstacle count" << endl;
                 
                 return false;
             }
@@ -171,18 +205,16 @@ bool ProcessArguments(int argc,
     /* initialize random seed: */
     srand (time(NULL));
 
-    robot = sf::CircleShape (ShapeRadiusSize, robotVertexNum);
-    robot.setFillColor(sf::Color::Green);
-    CenterRobotPosition(robot, point_type(RobotStartPosX, RobotStartPosY, 0));
+    robot = make_shared<sf::CircleShape> (ShapeRadiusSize, robotVertexNum);
+    robot->setFillColor(sf::Color::Green);
+    CenterPosition(robot.get(), point_type(RobotStartPosX, RobotStartPosY, 0));
 
     for (uint32_t i = 0; i < obstacleNum; ++i)
     {
-        sf::CircleShape obstacle(ShapeRadiusSize, rand() % MaxNumVertices + MinNumVertices);
-        obstacle.setFillColor(sf::Color::Blue);
-        obstacle.setOrigin(obstacle.getRadius(), obstacle.getRadius());
-        obstacle.setPosition(ObstacleCoordinates[i][0], ObstacleCoordinates[i][1]);
-
-        polygonObstacles.push_back(obstacle);
+        shared_ptr<sf::Shape> pObstacle = make_shared<sf::CircleShape>(ShapeRadiusSize, rand() % MaxNumVertices + MinNumVertices);
+        pObstacle->setFillColor(sf::Color::Blue);
+        CenterPosition(pObstacle.get(), point_type(ObstacleCoordinates[i][0], ObstacleCoordinates[i][1], 0));
+        polygonObstacles.push_back(pObstacle);
     }
 
     return true;        
@@ -203,28 +235,28 @@ void GetOppositeAngles(const vector<float>& angles,
 /**
   * Get normal vectors of all edges in a polygon
   */
-void GetNormalVectors(const sf::CircleShape& shape,
+void GetNormalVectors(const sf::ConvexShape* shape,
                       vector<vector<sf::Vertex> >& normalVectors,
                       bool outwardNormal)
 {
     vector<Point> vectors;
     vector<Point> midPoints;
 
-    size_t vertexCount = shape.getPointCount();
+    size_t vertexCount = shape->getPointCount();
 
     for (uint32_t i = 0; i < vertexCount; ++i)
     {    
         Point vector;
         Point midPoint;
 
-        sf::Vector2f vertex = shape.getPoint(i);
+        sf::Vector2f vertex = shape->getPoint(i);
         sf::Vector2f nextVertex;
 
-        nextVertex = shape.getPoint((i + 1) % vertexCount);
+        nextVertex = shape->getPoint((i + 1) % vertexCount);
         vector.x = nextVertex.x - vertex.x;
         vector.y = nextVertex.y - vertex.y;
-        midPoint.x = (vertex.x + nextVertex.x) / 2  + shape.getPosition().x;
-        midPoint.y = (vertex.y + nextVertex.y) / 2  + shape.getPosition().y;
+        midPoint.x = (vertex.x + nextVertex.x) / 2  + shape->getPosition().x;
+        midPoint.y = (vertex.y + nextVertex.y) / 2  + shape->getPosition().y;
 
 #ifdef DEBUG
         cout << "Vertex " << i << " : " << vertex.x << ", " << vertex.y << endl;
@@ -363,8 +395,8 @@ bool IsInWorkSpace(float x, float y)
 {
     if ((x < WorkSpaceStartX) ||
         (y < WorkSpaceStartY) ||
-        (x > (WorkSpaceStartX + WorkSpaceSizeX - ShapeRadiusSize * 2)) ||
-        (y > (WorkSpaceStartY + WorkSpaceSizeY - ShapeRadiusSize * 2)))
+        (x > (WorkSpaceStartX + WorkSpaceSizeX)) ||
+        (y > (WorkSpaceStartY + WorkSpaceSizeY)))
     {       
         return false;
     }
@@ -377,9 +409,10 @@ bool IsInWorkSpace(float x, float y)
  * @param robot - robot
  * @param p - point in which to center
  */
-void CenterRobotPosition(sf::CircleShape& robot, point_type p)
+void CenterPosition(sf::Shape* const pRobot, const point_type& p)
 {
-    robot.setOrigin(robot.getRadius(), robot.getRadius());
-    robot.setPosition(p.get<0>(), p.get<1>());
-    robot.setRotation(p.get<2>());
+    sf::FloatRect rect = pRobot->getLocalBounds();
+    pRobot->setOrigin(rect.width / 2.f, rect.height / 2.f);
+    pRobot->setPosition(p.get<0>(), p.get<1>());
+    pRobot->setRotation(p.get<2>());
 }

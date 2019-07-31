@@ -108,7 +108,7 @@ private:
     float GetMinDistanceFromNeighbors(uint32_t x, uint32_t y, uint32_t t);
 
 
-    bgi::rtree< value, bgi::quadratic<16> > m_rtree;
+    bgi::rtree< value, bgi::rstar<16> > m_rtree;
     std::shared_ptr<CollisionDetector>  m_pCollisionDetector = nullptr;
     bool m_isInit = false;
     std::vector<point_type> m_points;

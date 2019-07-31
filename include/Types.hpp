@@ -33,6 +33,7 @@ const float ShapeRadiusSize = 80.0f;
 const float OriginX = 500.0f;
 const float OriginY = 500.0f;
 const float DotRadiusSize = 10.0f;
+const float MaxNodeDistance = 100;
 const uint32_t MaxNumObstacles = 15;
 const uint32_t MaxNumVertices = 8;
 const uint32_t MinNumVertices = 3;

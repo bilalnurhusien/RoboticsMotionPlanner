@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 #include <fstream>
-
+#include <memory>
 
 /**
   * @brief rint help messages
@@ -21,10 +21,11 @@ void PrintHelp();
  */
 bool ProcessArguments(int argc,
                       char* argvp[],
-                      sf::CircleShape& robot,
-                      std::vector<sf::CircleShape>& polygonObstacles,
+                      std::shared_ptr<sf::Shape>& robot,
+                      std::vector<std::shared_ptr<sf::Shape> >& polygonObstacles,
                       bool& fullScreen,
-                      uint32_t& numNodes);
+                      uint32_t& numNodes,
+                      float& nodeDistance);
                       
 /**
   * Get opposite angles (180 deg rotation of an angle)
@@ -95,4 +96,4 @@ std::string ToStringSetPrecision(const T a_value, const int n = 4)
  * @param robot - robot
  * @param p - point in which to center
  */
-void CenterRobotPosition(sf::CircleShape& robot, point_type p);
+void CenterPosition(sf::Shape* const pRobot, const point_type& p);

@@ -19,8 +19,8 @@ class CollisionDetector
    
 public:
     
-    explicit CollisionDetector(const std::vector<sf::CircleShape> polygonObstacles,
-                               const sf::CircleShape& robot);
+    explicit CollisionDetector(const std::vector<std::shared_ptr<sf::Shape> >& polygonObstacles,
+                               const std::shared_ptr<sf::Shape>& robot);
 
     ~CollisionDetector();
 
@@ -40,6 +40,6 @@ public:
 
 private:
 std::vector<polygon_type> m_collisionObstacles;
-sf::CircleShape m_robot;
+std::shared_ptr<sf::Shape> m_pRobot;
 };
 

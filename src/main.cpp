@@ -3,7 +3,6 @@
 
 #include "../include/Helpers.hpp"
 #include "../include/Types.hpp"
-#include "../include/Minkowski.hpp"
 #include "../include/CollisionDetector.hpp"
 #include "../include/MotionPlanning.hpp"
 
@@ -16,7 +15,7 @@ using namespace std;
  * @param edges - list of edges connecting roadmap vertices
  */
 void GetRoadMap(MotionPlanning& motionPlanning,
-                vector<sf::CircleShape>& roadMap,
+                vector<shared_ptr<sf::CircleShape> > & roadMap,
                 vector<vector<sf::Vertex> >& edges)
 {
     edges.clear();
@@ -26,8 +25,8 @@ void GetRoadMap(MotionPlanning& motionPlanning,
 
     for (uint32_t i = 0; i  < vertices.size(); ++i)
     {
-        roadMap.push_back(sf::CircleShape(DotRadiusSize));
-        CenterRobotPosition(roadMap[i], vertices[i].p);
+        roadMap.push_back(make_shared<sf::CircleShape>(DotRadiusSize));
+        CenterPosition(roadMap[i].get(), vertices[i].p);
         for (uint32_t j = 0; j < vertices[i].neighbors.size(); ++j)
         {
             edges.push_back(
@@ -44,22 +43,20 @@ int32_t main(int argc, char *argv[])
 {
 
     sf::RenderWindow window;
-    sf::CircleShape robot;
-    sf::CircleShape robotDot = sf::CircleShape(DotRadiusSize);
+    shared_ptr<sf::Shape> robot;
+    shared_ptr<sf::CircleShape> robotDot = make_shared<sf::CircleShape>(DotRadiusSize);
 
-    vector<sf::CircleShape> polygonObstacles;
-    vector<sf::ConvexShape> minkowskiObstacles;
-
-    vector<sf::CircleShape> roadMapVertices;
+    vector<shared_ptr<sf::Shape> > polygonObstacles;
+    vector<shared_ptr<sf::CircleShape> > roadMapVertices;
     vector<vector<sf::Vertex> > roadMapEdges;
 
     list<point_type> path;
     sf::Clock clock;
 
     uint32_t maxNumNodes = 500;
-    float minDistance = 1.f;
     uint32_t maxOfNumNeighbors = 5;
 
+    float minDistance = 1.f;
     bool displayConfigSpace = false;
     bool fullScreen = false;
     bool displayPointLocations = false;
@@ -67,7 +64,7 @@ int32_t main(int argc, char *argv[])
     bool displayIntermediates = true;
 
     /* Process arguments */
-    if (!ProcessArguments(argc, argv, robot, polygonObstacles, fullScreen, maxNumNodes))
+    if (!ProcessArguments(argc, argv, robot, polygonObstacles, fullScreen, maxNumNodes, minDistance))
     {
         return -1;
     }
@@ -82,8 +79,8 @@ int32_t main(int argc, char *argv[])
     }
 
     /* Position dot at center of robot */
-    CenterRobotPosition(robotDot, point_type(RobotStartPosX, RobotStartPosY, 0));
-    robotDot.setFillColor(robot.getFillColor());
+    CenterPosition(robotDot.get(), point_type(RobotStartPosX, RobotStartPosY, 0));
+    robotDot->setFillColor(robot->getFillColor());
     
     /* Create motion planning roadmap */
     shared_ptr<CollisionDetector> pCollisionDetector = make_shared<CollisionDetector>(polygonObstacles, robot);
@@ -109,12 +106,6 @@ int32_t main(int argc, char *argv[])
     text.setFont(font);
     text.setCharacterSize(18); 
     text.setColor(sf::Color::White);
-
-    for (uint32_t i = 0; i < robot.getPointCount(); ++i)
-    {
-        sf::Vector2f vec = robot.getPoint(i);
-    }
-
     window.clear();
 
     while (window.isOpen())
@@ -176,7 +167,7 @@ int32_t main(int argc, char *argv[])
                     cout << "New point: " << position.x << " " << position.y << " not a collision " << endl;
                     
                     list <point_type> new_path = motionPlanning.GetShortestPath(
-                                                        point_type(robotDot.getPosition().x, robotDot.getPosition().y, 0),
+                                                        point_type(robotDot->getPosition().x, robotDot->getPosition().y, 0),
                                                         point_type(position.x, position.y, 0));
 
                     if (!new_path.empty())
@@ -200,8 +191,8 @@ int32_t main(int argc, char *argv[])
                 point_type p = path.back();
                 path.pop_back();
                 /* Center robot around this new point */
-                CenterRobotPosition(robotDot, p);
-                CenterRobotPosition(robot, p);
+                CenterPosition(robotDot.get(), p);
+                CenterPosition(robot.get(), p);
                 if (!displayIntermediates)
                 {
                     window.clear();
@@ -212,26 +203,18 @@ int32_t main(int argc, char *argv[])
        
         if (displayConfigSpace)
         {
-            for (uint32_t i = 0; i < minkowskiObstacles.size(); ++i)
-            {
-                window.draw(minkowskiObstacles[i]);
-                text.setString("C-Obstacle" + ToStringSetPrecision(i, 1));
-                text.setPosition(minkowskiObstacles[i].getPosition().x, minkowskiObstacles[i].getPosition().y);
-                window.draw(text);
-            }
-
             for (uint32_t i = 0; i  < roadMapVertices.size(); ++i)
             {
-                sf::Vector2f coord = roadMapVertices[i].getPosition();
+                sf::Vector2f coord = roadMapVertices[i]->getPosition();
 
                 /* Write coordinates above each roadmap vertex */
                 if (displayPointLocations)
                 {
                     text.setPosition(coord.x - DotRadiusSize, coord.y - 3 * DotRadiusSize);
-                    text.setString(ToStringSetPrecision(coord.x, 0) + ", " + ToStringSetPrecision(coord.y, 0) + ", " + ToStringSetPrecision(roadMapVertices[i].getRotation(), 0));
+                    text.setString(ToStringSetPrecision(coord.x, 0) + ", " + ToStringSetPrecision(coord.y, 0) + ", " + ToStringSetPrecision(roadMapVertices[i]->getRotation(), 0));
                     window.draw(text);
                 }
-                window.draw(roadMapVertices[i]);
+                window.draw(*roadMapVertices[i]);
             }
             
             for (uint32_t i = 0; i < roadMapEdges.size(); ++i)
@@ -239,23 +222,25 @@ int32_t main(int argc, char *argv[])
                 window.draw((sf::Vertex*)(&roadMapEdges[i][0]), 2, sf::Lines);
             }
             
-            window.draw(robotDot);
+            window.draw(*robotDot);
         }
         else
         {
             text.setString("Robot");
-            text.setPosition(robot.getPosition().x, robot.getPosition().y);
-            window.draw(robot);
+            text.setPosition(robot->getPosition().x, robot->getPosition().y);
+            window.draw(*robot);
             window.draw(text);
             
             if (displayPointLocations)
             {
-                for (uint32_t i = 0; i < robot.getPointCount(); ++i)
+                for (uint32_t i = 0; i < robot->getPointCount(); ++i)
                 {
-                    float x = robot.getPosition().x + robot.getPoint(i).x;
-                    float y = robot.getPosition().y + robot.getPoint(i).y;
-                    text.setPosition(x - robot.getRadius(), y - robot.getRadius());
+                    float x = robot->getPosition().x + robot->getPoint(i).x;
+                    float y = robot->getPosition().y + robot->getPoint(i).y;
+                    
+                    sf::FloatRect rect = robot->getLocalBounds();
 
+                    text.setPosition(x - rect.width/2, y - rect.height/2);
                     text.setString(ToStringSetPrecision(x, 0) + ", " + ToStringSetPrecision(y, 0));
                     window.draw(text);
                 }
@@ -266,18 +251,21 @@ int32_t main(int argc, char *argv[])
         {
             for (uint32_t i = 0; i < polygonObstacles.size(); ++i)
             {
-                window.draw(polygonObstacles[i]);
+                window.draw(*polygonObstacles[i]);
                 text.setString("Obstacle" + to_string(i));
-                text.setPosition(polygonObstacles[i].getPosition().x, polygonObstacles[i].getPosition().y);
+                text.setPosition(polygonObstacles[i]->getPosition().x, polygonObstacles[i]->getPosition().y);
                 window.draw(text);
                 
                 if (displayPointLocations)
                 {
-                    for (uint32_t j = 0; j < polygonObstacles[i].getPointCount(); ++j)
+                    for (uint32_t j = 0; j < polygonObstacles[i]->getPointCount(); ++j)
                     {
-                        float x = polygonObstacles[i].getPosition().x + polygonObstacles[i].getPoint(j).x;
-                        float y = polygonObstacles[i].getPosition().y + polygonObstacles[i].getPoint(j).y;
-                        text.setPosition(x - polygonObstacles[i].getRadius(), y - polygonObstacles[i].getRadius());
+                        float x = polygonObstacles[i]->getPosition().x + polygonObstacles[i]->getPoint(j).x;
+                        float y = polygonObstacles[i]->getPosition().y + polygonObstacles[i]->getPoint(j).y;
+                        
+                        sf::FloatRect rect = polygonObstacles[i]->getLocalBounds();
+
+                        text.setPosition(x - rect.width/2, y - rect.height/2);
                         text.setString(ToStringSetPrecision(x, 0) + ", " + ToStringSetPrecision(y, 0));
                         window.draw(text);
                     }

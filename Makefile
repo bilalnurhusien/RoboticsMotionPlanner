@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 SRC = src
-OBJS =  ${SRC}/main.o ${SRC}/Helpers.o ${SRC}/Minkowski.o ${SRC}/CollisionDetector.o ${SRC}/MotionPlanning.o
+OBJS =  ${SRC}/main.o ${SRC}/Helpers.o ${SRC}/CollisionDetector.o ${SRC}/MotionPlanning.o
 CXXFLAGS = -std=c++14
 CXX = g++
 LIBS =  -lsfml-graphics -lsfml-window -lsfml-system
