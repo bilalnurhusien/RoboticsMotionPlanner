@@ -118,11 +118,12 @@ bool CollisionDetector::IsPathCollision(point_type p1, point_type p2)
     //
     std::vector<point_type> vecP;
 
-    for (float t = 0; t <= 1.f; t+=0.2f)
+    for (float t = 0; t <= 1.f; t+=0.1f)
     {
         point_type newPoint;
-        newPoint.set<0>(p1.get<0>() + (p2.get<0>() - p1.get<0>()) * t);
-        newPoint.set<1>(p1.get<1>() + (p2.get<1>() - p1.get<1>()) * t);
+        newPoint.set<0>(p2.get<0>() + (p1.get<0>() - p2.get<0>()) * t);
+        newPoint.set<1>(p2.get<1>() + (p1.get<1>() - p2.get<1>()) * t);
+        newPoint.set<2>(p2.get<2>() + (p1.get<2>() - p2.get<2>()) * t);
         vecP.push_back(newPoint);
     }
     
