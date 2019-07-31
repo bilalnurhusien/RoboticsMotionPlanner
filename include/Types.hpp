@@ -37,6 +37,7 @@ const float MaxNodeDistance = 100;
 const uint32_t MaxNumObstacles = 15;
 const uint32_t MaxNumVertices = 8;
 const uint32_t MinNumVertices = 3;
+const uint32_t LargeNumOfNodes = 5000;
 const uint32_t MinNumOfNodes = 10;
 const uint32_t RobotStartPosX = 400;
 const uint32_t RobotStartPosY = 200;

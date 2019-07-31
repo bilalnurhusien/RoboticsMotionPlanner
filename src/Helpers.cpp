@@ -210,6 +210,11 @@ bool ProcessArguments(int argc,
 
                 return false;
             }
+            
+            if (numNodes > LargeNumOfNodes)
+            {
+                cout << "Large num of nodes selected: " << argvp[i] << endl;
+            }
         }
         else if (strcmp(argvp[i], "-r") == 0)
         {
