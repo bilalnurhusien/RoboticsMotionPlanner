@@ -97,7 +97,7 @@ private:
      * @param x
      * @param y
      */
-    void SelectRandomCoordinate(uint32_t& x, uint32_t& y);
+    void SelectRandomCoordinate(uint32_t& x, uint32_t& y, uint32_t& t);
 
     /**
      * @brief Get minimum distance from neighboring point(s)
@@ -105,7 +105,7 @@ private:
      * @param y - y-coord point to consider 
      * @return minimum distance
      */
-    float GetMinDistanceFromNeighbors(uint32_t x, uint32_t y);
+    float GetMinDistanceFromNeighbors(uint32_t x, uint32_t y, uint32_t t);
 
 
     bgi::rtree< value, bgi::quadratic<16> > m_rtree;

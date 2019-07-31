@@ -82,7 +82,7 @@ int32_t main(int argc, char *argv[])
     }
 
     /* Position dot at center of robot */
-    CenterRobotPosition(robotDot, point_type(DotStartPosX, DotStartPosY));
+    CenterRobotPosition(robotDot, point_type(RobotStartPosX, RobotStartPosY, 0));
     robotDot.setFillColor(robot.getFillColor());
     
     /* Create motion planning roadmap */
@@ -140,18 +140,18 @@ int32_t main(int argc, char *argv[])
                        text = static_cast<char>(event.text.unicode);
                     }
                 }
-                if (text == Char_P)
+                if (text == Char_p)
                 {
                     displayPointLocations = !displayPointLocations;
                     window.clear();
                 }
-                else if (text == Char_O)
+                else if (text == Char_o)
                 {
                     displayObstacles = !displayObstacles;
                     displayPointLocations = false;
                     window.clear();
                 }
-                else if (text == Char_I)
+                else if (text == Char_i)
                 {
                     displayIntermediates = !displayIntermediates;
                     window.clear();
@@ -166,7 +166,7 @@ int32_t main(int argc, char *argv[])
                 {
                     sf::Vector2i position = sf::Mouse::getPosition(window);
                   
-                    if (pCollisionDetector->IsCollision(point_type(position.x, position.y)))
+                    if (pCollisionDetector->IsCollision(point_type(position.x, position.y, 0)))
                     {
                         cout << "Can't move to position. Collision detected at x: " << position.x << ", y: " << position.y << endl;
                         
@@ -176,8 +176,8 @@ int32_t main(int argc, char *argv[])
                     cout << "New point: " << position.x << " " << position.y << " not a collision " << endl;
                     
                     list <point_type> new_path = motionPlanning.GetShortestPath(
-                                                        point_type(robotDot.getPosition().x, robotDot.getPosition().y),
-                                                        point_type(position.x, position.y));
+                                                        point_type(robotDot.getPosition().x, robotDot.getPosition().y, 0),
+                                                        point_type(position.x, position.y, 0));
 
                     if (!new_path.empty())
                     {
@@ -202,7 +202,7 @@ int32_t main(int argc, char *argv[])
                 /* Center robot around this new point */
                 CenterRobotPosition(robotDot, p);
                 CenterRobotPosition(robot, p);
-                if (displayIntermediates)
+                if (!displayIntermediates)
                 {
                     window.clear();
                 }
@@ -219,15 +219,18 @@ int32_t main(int argc, char *argv[])
                 text.setPosition(minkowskiObstacles[i].getPosition().x, minkowskiObstacles[i].getPosition().y);
                 window.draw(text);
             }
-            
+
             for (uint32_t i = 0; i  < roadMapVertices.size(); ++i)
             {
                 sf::Vector2f coord = roadMapVertices[i].getPosition();
 
                 /* Write coordinates above each roadmap vertex */
-                text.setPosition(coord.x - DotRadiusSize, coord.y - 3 * DotRadiusSize);
-                text.setString(ToStringSetPrecision(coord.x, 0) + ", " + ToStringSetPrecision(coord.y, 0));
-                window.draw(text);
+                if (displayPointLocations)
+                {
+                    text.setPosition(coord.x - DotRadiusSize, coord.y - 3 * DotRadiusSize);
+                    text.setString(ToStringSetPrecision(coord.x, 0) + ", " + ToStringSetPrecision(coord.y, 0) + ", " + ToStringSetPrecision(roadMapVertices[i].getRotation(), 0));
+                    window.draw(text);
+                }
                 window.draw(roadMapVertices[i]);
             }
             

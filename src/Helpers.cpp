@@ -173,7 +173,7 @@ bool ProcessArguments(int argc,
 
     robot = sf::CircleShape (ShapeRadiusSize, robotVertexNum);
     robot.setFillColor(sf::Color::Green);
-    CenterRobotPosition(robot, point_type(RobotStartPosX, RobotStartPosY));
+    CenterRobotPosition(robot, point_type(RobotStartPosX, RobotStartPosY, 0));
 
     for (uint32_t i = 0; i < obstacleNum; ++i)
     {
@@ -381,4 +381,5 @@ void CenterRobotPosition(sf::CircleShape& robot, point_type p)
 {
     robot.setOrigin(robot.getRadius(), robot.getRadius());
     robot.setPosition(p.get<0>(), p.get<1>());
+    robot.setRotation(p.get<2>());
 }

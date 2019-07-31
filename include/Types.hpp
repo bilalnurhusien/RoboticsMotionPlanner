@@ -39,13 +39,11 @@ const uint32_t MinNumVertices = 3;
 const uint32_t MinNumOfNodes = 10;
 const uint32_t RobotStartPosX = 400;
 const uint32_t RobotStartPosY = 200;
-const uint32_t DotStartPosX = RobotStartPosX + ShapeRadiusSize;
-const uint32_t DotStartPosY = RobotStartPosY + ShapeRadiusSize;
 const char FontFile[] = "/usr/share/fonts/truetype/freefont/FreeMono.ttf";
 const char Char_Space = 32;
-const char Char_P = 'r';
-const char Char_O = 'o';
-const char Char_I = 'i';
+const char Char_p = 'p';
+const char Char_o = 'o';
+const char Char_i = 'i';
 const uint32_t Frame_Delay_Ms = 200;
 
 const float ObstacleCoordinates[MaxNumObstacles][2] =
@@ -70,9 +68,10 @@ const float ObstacleCoordinates[MaxNumObstacles][2] =
 namespace bg = boost::geometry;
 namespace bgm = boost::geometry::model;
 
-typedef bg::model::point<float, 2, bg::cs::cartesian>  point_type;
+typedef bg::model::point<float, 2, bg::cs::cartesian>  point_type_2d;
+typedef bg::model::point<float, 3, bg::cs::cartesian>  point_type;
 typedef bg::model::box<point_type> box_type;
-typedef bg::model::polygon<point_type, false, false> polygon_type; // ccw, closed polygon
+typedef bg::model::polygon<point_type_2d, false, false> polygon_type; // ccw, closed polygon
 typedef std::pair<point_type, unsigned> value;
 
 /**

@@ -84,40 +84,31 @@ std::vector<bgm::linestring<point_type> > GetLineSegments(const sf::CircleShape&
 bool CollisionDetector::IsCollision(const point_type& p)
 {
     CenterRobotPosition(m_robot, p);
-    
-    std::vector<bgm::linestring<point_type> > robotLineSegments = GetLineSegments(m_robot);
-    
-    if (!IsInWorkSpace(p.get<0>() - ShapeRadiusSize, p.get<1>() - ShapeRadiusSize))
-    {        
-        return true;
-    }
 
-
-        uint32_t verticesCount = m_robot.getPointCount();
-        std::ostringstream out;    
-        out << "POLYGON((";
+    uint32_t verticesCount = m_robot.getPointCount();
+    std::ostringstream out;    
+    out << "POLYGON((";
+    
+    for (uint32_t j = 0; j <= verticesCount; ++j)
+    {
+        sf::Vector2f vertex = m_robot.getPoint(j % verticesCount);
+        out << ToStringSetPrecision(m_robot.getPosition().x + vertex.x, 3) << " " << ToStringSetPrecision(m_robot.getPosition().y + vertex.y, 3);
         
-        for (uint32_t j = 0; j <= verticesCount; ++j)
+        if (j != verticesCount)
         {
-            sf::Vector2f vertex = m_robot.getPoint(j % verticesCount);
-            out << ToStringSetPrecision(m_robot.getPosition().x + vertex.x, 3) << " " << ToStringSetPrecision(m_robot.getPosition().y + vertex.y, 3);
-            
-            if (j != verticesCount)
-            {
-                out << ",";
-            }
+            out << ",";
         }
-        
-        out << "))";
+    }
+    
+    out << "))";
 
 #ifdef DEBUG
-        cout << out.str() << endl;
+    cout << out.str() << endl;
 #endif
-        polygon_type poly;
-        bg::read_wkt(
-            out.str(),
-            poly);
-        
+    polygon_type poly;
+    bg::read_wkt(
+        out.str(),
+        poly);        
 
     for (uint32_t i = 0; i < m_collisionObstacles.size(); ++i)
     {
@@ -159,5 +150,6 @@ bool CollisionDetector::IsPathCollision(point_type p1, point_type p2)
             return true;
         }
     }
+
     return false;
 }

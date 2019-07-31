@@ -39,19 +39,19 @@ std::ostream& operator<<(std::ostream &os, const point_type &p)
     return os;
 }
 
-float MotionPlanning::GetMinDistanceFromNeighbors(uint32_t x, uint32_t y)
+float MotionPlanning::GetMinDistanceFromNeighbors(uint32_t x, uint32_t y, uint32_t t)
 {
     vector<value> neighbors;
-    m_rtree.query(bgi::nearest(point_type(x, y), m_maxNumOfNeighbors), std::back_inserter(neighbors));
+    m_rtree.query(bgi::nearest(point_type(x, y, t), m_maxNumOfNeighbors), std::back_inserter(neighbors));
     float minDist = std::numeric_limits<float>::max();
     for (uint32_t j = 0; j < neighbors.size(); ++j)
     {
-        if (m_pCollisionDetector->IsPathCollision(point_type(x, y), neighbors[j].first))
+        if (m_pCollisionDetector->IsPathCollision(point_type(x, y, t), neighbors[j].first))
         {
             continue;
         }
 
-        float neighborDist = static_cast<float>(boost::geometry::distance(point_type(x, y), neighbors[j].first));
+        float neighborDist = static_cast<float>(boost::geometry::distance(point_type(x, y, t), neighbors[j].first));
 
         if (neighborDist < minDist)
         {
@@ -62,10 +62,11 @@ float MotionPlanning::GetMinDistanceFromNeighbors(uint32_t x, uint32_t y)
     return minDist;
    
 }
-void MotionPlanning::SelectRandomCoordinate(uint32_t& x, uint32_t& y)
+void MotionPlanning::SelectRandomCoordinate(uint32_t& x, uint32_t& y, uint32_t& t)
 {
     x = rand() % ((uint32_t)WorkSpaceSizeX);
     y = rand() % ((uint32_t)WorkSpaceSizeY);
+    t = rand() % 360;
 }
 
 bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeighbors, float minDistance)
@@ -91,6 +92,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
             uint32_t randomSelectTries = 0;
             uint32_t x = 0;
             uint32_t y = 0;
+            uint32_t t = 0;
             bool collision = true;
             float distance = std::numeric_limits<float>::min();
 
@@ -100,19 +102,19 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
              **/
             do
             {
-                SelectRandomCoordinate(x, y);
-                if (!(collision = m_pCollisionDetector->IsCollision(point_type(x, y))))
+                SelectRandomCoordinate(x, y, t);
+                if (!(collision = m_pCollisionDetector->IsCollision(point_type(x, y, t))))
                 {
-                    distance = GetMinDistanceFromNeighbors(x, y);
+                    distance = GetMinDistanceFromNeighbors(x, y, t);
                 }
 
                 randomSelectTries++;
             } while ((collision ||
-                     (minDistance < minDistance)) &&
+                     (distance < minDistance)) &&
                      (randomSelectTries < MaxRandomSelectTries));
 
             if ((randomSelectTries >= MaxRandomSelectTries) ||
-                (m_pCollisionDetector->IsCollision(point_type(x, y))) ||
+                (collision == true) ||
                 (distance < minDistance))
             {
                 break;
@@ -120,7 +122,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
 
             /* Insert new value into graph and rtree */
             Vertex_t vertex;
-            vertex.p = point_type(x, y);
+            vertex.p = point_type(x, y, t);
             boost::add_vertex(vertex, *m_pGraph);
             m_rtree.insert(std::make_pair(vertex.p, i));
         }
@@ -194,7 +196,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
     }
     m_maxNumOfNeighbors = maxNumOfNeighbors;
 
-    AddVertex(point_type(RobotStartPosX + ShapeRadiusSize, RobotStartPosY + ShapeRadiusSize));
+    AddVertex(point_type(RobotStartPosX, RobotStartPosY, 0));
 
     cout << "Num vertices: " << boost::num_vertices(*m_pGraph) << endl;
 
