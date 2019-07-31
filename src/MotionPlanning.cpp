@@ -75,7 +75,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
     //
     m_maxNumOfNeighbors = maxNumOfNeighbors + 1;
 
-    const uint32_t MaxTotalRetries = 50;
+    const uint32_t MaxTotalRetries = 10;
     const uint32_t MaxRandomSelectTries = 20;
     uint32_t totalRetries = 0;
     bool success = false;

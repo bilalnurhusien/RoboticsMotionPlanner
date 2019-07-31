@@ -23,7 +23,8 @@ bool ProcessArguments(int argc,
                       char* argvp[],
                       sf::CircleShape& robot,
                       std::vector<sf::CircleShape>& polygonObstacles,
-                      bool& fullScreen);
+                      bool& fullScreen,
+                      uint32_t& numNodes);
                       
 /**
   * Get opposite angles (180 deg rotation of an angle)

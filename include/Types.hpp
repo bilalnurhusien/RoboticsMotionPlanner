@@ -36,6 +36,7 @@ const float DotRadiusSize = 10.0f;
 const uint32_t MaxNumObstacles = 15;
 const uint32_t MaxNumVertices = 8;
 const uint32_t MinNumVertices = 3;
+const uint32_t MinNumOfNodes = 10;
 const uint32_t RobotStartPosX = 400;
 const uint32_t RobotStartPosY = 200;
 const uint32_t DotStartPosX = RobotStartPosX + ShapeRadiusSize;
@@ -44,6 +45,7 @@ const char FontFile[] = "/usr/share/fonts/truetype/freefont/FreeMono.ttf";
 const char Char_Space = 32;
 const char Char_P = 'r';
 const char Char_O = 'o';
+const char Char_I = 'i';
 const uint32_t Frame_Delay_Ms = 200;
 
 const float ObstacleCoordinates[MaxNumObstacles][2] =

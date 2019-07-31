@@ -56,17 +56,18 @@ int32_t main(int argc, char *argv[])
     list<point_type> path;
     sf::Clock clock;
 
-    uint32_t maxNumNodes = 100;
-    float minDistance = 10.f;
+    uint32_t maxNumNodes = 500;
+    float minDistance = 1.f;
     uint32_t maxOfNumNeighbors = 5;
 
     bool displayConfigSpace = false;
     bool fullScreen = false;
     bool displayPointLocations = false;
     bool displayObstacles = true;
+    bool displayIntermediates = true;
 
     /* Process arguments */
-    if (!ProcessArguments(argc, argv, robot, polygonObstacles, fullScreen))
+    if (!ProcessArguments(argc, argv, robot, polygonObstacles, fullScreen, maxNumNodes))
     {
         return -1;
     }
@@ -150,6 +151,11 @@ int32_t main(int argc, char *argv[])
                     displayPointLocations = false;
                     window.clear();
                 }
+                else if (text == Char_I)
+                {
+                    displayIntermediates = !displayIntermediates;
+                    window.clear();
+                }
                 else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
                 {
                     displayConfigSpace = !displayConfigSpace;
@@ -196,6 +202,10 @@ int32_t main(int argc, char *argv[])
                 /* Center robot around this new point */
                 CenterRobotPosition(robotDot, p);
                 CenterRobotPosition(robot, p);
+                if (displayIntermediates)
+                {
+                    window.clear();
+                }
                 clock.restart();
             }
         }

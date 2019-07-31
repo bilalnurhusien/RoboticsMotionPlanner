@@ -41,7 +41,8 @@ bool ProcessArguments(int argc,
                       char* argvp[],
                       sf::CircleShape& robot,
                       vector<sf::CircleShape>& polygonObstacles,
-                      bool& fullScreen)
+                      bool& fullScreen,
+                      uint32_t& numNodes)
 {
     if (argc < 3)
     {
@@ -59,8 +60,39 @@ bool ProcessArguments(int argc,
             fullScreen = true;
             continue;
         }
+        
+        else if (strcmp(argvp[i], "-n") == 0)
+        {
+            if ((i + 1) > argc)
+            {
+                cout << "Number of nodes missing" << endl;
 
-        if (strcmp(argvp[i], "-r") == 0)
+                return false;
+            }
+            
+            ++i;
+
+            if (!IsNumeric(argvp[i]))
+            {
+                cout << "Invalid numerical argument: " << argvp[i] << endl;
+
+                PrintHelp();
+
+                return false;
+            }
+            
+            numNodes = strtol(argvp[i], nullptr, 10);
+            
+            if (numNodes < MinNumOfNodes)
+            {
+                cout << "Please select larger number of nodes: " << argvp[i] << endl;
+
+                PrintHelp();
+
+                return false;
+            }
+        }
+        else if (strcmp(argvp[i], "-r") == 0)
         {
             if ((i + 1) > argc)
             {
