@@ -1,0 +1,17 @@
+<config>
+    <filename>config.xml</filename>
+    	<robot>
+        	<points>0,0 100,0 100,100 0,100</points>
+        	<position>200,200</position>
+    	</robot>
+	<obstacles>
+		<obstacle>
+			<points>0,0 1000,0 1000,400 0,400</points>
+			<position>800,200</position>
+		</obstacle>
+                <obstacle>
+                        <points>0,0 1000,0 1000,400 0,400</points>
+                        <position>800,800</position>
+                </obstacle>
+	</obstacles>
+</config>

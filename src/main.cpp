@@ -162,9 +162,7 @@ int32_t main(int argc, char *argv[])
                         
                         continue;
                     }
-                    
-                    cout << "New point: " << position.x << " " << position.y << " not a collision " << endl;
-                    
+
                     list <point_type> new_path = motionPlanning.GetShortestPath(
                                                         point_type(robotDot->getPosition().x, robotDot->getPosition().y, 0),
                                                         point_type(position.x, position.y, 0));

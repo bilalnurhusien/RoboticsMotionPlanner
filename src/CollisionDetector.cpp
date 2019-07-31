@@ -113,8 +113,9 @@ bool CollisionDetector::IsPathCollision(point_type p1, point_type p2)
     //
     // Use a parameterization to create points along line segment
     //
-    // x(t) = a1+(b1−a1)t,  0≤t≤1.
-    // y(t) = a2+(b2−a2)t,  0≤t≤1.
+    // x(t) = a1+(a1−b1)t,  0≤t≤1.
+    // y(t) = a2+(a2−b2)t,  0≤t≤1.
+    // theta(t) = a3+(a3−b3)t,  0≤t≤1.
     //
     std::vector<point_type> vecP;
 
