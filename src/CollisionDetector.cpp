@@ -92,18 +92,42 @@ bool CollisionDetector::IsCollision(const point_type& p)
         return true;
     }
 
+
+        uint32_t verticesCount = m_robot.getPointCount();
+        std::ostringstream out;    
+        out << "POLYGON((";
+        
+        for (uint32_t j = 0; j <= verticesCount; ++j)
+        {
+            sf::Vector2f vertex = m_robot.getPoint(j % verticesCount);
+            out << ToStringSetPrecision(m_robot.getPosition().x + vertex.x, 3) << " " << ToStringSetPrecision(m_robot.getPosition().y + vertex.y, 3);
+            
+            if (j != verticesCount)
+            {
+                out << ",";
+            }
+        }
+        
+        out << "))";
+
+#ifdef DEBUG
+        cout << out.str() << endl;
+#endif
+        polygon_type poly;
+        bg::read_wkt(
+            out.str(),
+            poly);
+        
+
     for (uint32_t i = 0; i < m_collisionObstacles.size(); ++i)
     {
-        for (uint32_t j = 0; j < robotLineSegments.size(); ++j)
-        {
-            std::deque<point_type> output;
+        std::deque<polygon_type> output;
 
-            boost::geometry::intersection(robotLineSegments[j], m_collisionObstacles[i], output);
-        
-            if (!output.empty())
-            {
-                return true;
-            }
+        boost::geometry::intersection(poly, m_collisionObstacles[i], output);
+    
+        if (!output.empty())
+        {
+            return true;
         }
     }
 

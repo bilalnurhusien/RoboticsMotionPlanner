@@ -197,7 +197,6 @@ int32_t main(int argc, char *argv[])
                 CenterRobotPosition(robotDot, p);
                 CenterRobotPosition(robot, p);
                 clock.restart();
-                window.clear();
             }
         }
        
