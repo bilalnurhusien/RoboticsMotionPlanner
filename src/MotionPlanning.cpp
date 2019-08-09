@@ -44,7 +44,7 @@ float MotionPlanning::GetMinDistanceFromNeighbors(uint32_t x, uint32_t y, uint32
     vector<value> neighbors;
     m_rtree.query(bgi::nearest(point_type(x, y, t), m_maxNumOfNeighbors), std::back_inserter(neighbors));
     float minDist = std::numeric_limits<float>::max();
-    for (uint32_t j = 0; j < neighbors.size(); ++j)
+    for (uint32_t j = 1; j < neighbors.size(); ++j)
     {
         if (m_pCollisionDetector->IsPathCollision(point_type(x, y, t), neighbors[j].first))
         {
@@ -139,11 +139,19 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
         else
         {
             //
-            // Decrement the max number of nodes to increase the likelihood of success next time
+            // Decrement the number of nodes and distance to increase the likelihood of success next time
             //
             m_rtree.clear();
             m_pGraph->clear();
-            maxNumOfNodes -= 5;
+            if (maxNumOfNodes > 5)
+            {
+                maxNumOfNodes -= 5;
+            }
+            
+            if (minDistance > 5)
+            {
+                minDistance -= 5;
+            }
         }
     }
     
@@ -199,6 +207,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
     AddVertex(robotStart);
 
     cout << "Num vertices: " << boost::num_vertices(*m_pGraph) << endl;
+    cout << "Minimum distance: " << minDistance << endl;
 
     return true;
 }

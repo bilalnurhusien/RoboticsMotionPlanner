@@ -27,7 +27,7 @@ void PrintHelp()
     cout << "\t-i: CSV input file" << endl;
     cout << "\t-n: Number of nodes in PRM graph" << endl;
     cout << "\t-d: Minimum distance between PRM nodes" << endl;
-    cout << "Example:\n\t./pathplanning -r 3 -o 5 -f -n 300 # For a triangle robot with 5 obstacles in full screen workspace with 300 nodes in PRM" << endl;
+    cout << "Example:\n\t./pathplanning -r 3 -o 5 -f -n 500 # For a triangle robot with 5 obstacles in full screen workspace with 500 nodes in PRM" << endl;
 }
 
 /* Check if a string is a numerical value */

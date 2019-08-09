@@ -61,7 +61,7 @@ int32_t main(int argc, char *argv[])
     bool fullScreen = false;
     bool displayPointLocations = false;
     bool displayObstacles = true;
-    bool displayIntermediates = true;
+    bool displayIntermediates = false;
 
     /* Process arguments */
     if (!ProcessArguments(argc, argv, robot, polygonObstacles, fullScreen, maxNumNodes, minDistance))
