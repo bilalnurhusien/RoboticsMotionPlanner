@@ -79,7 +79,6 @@ bool ReadFile(string fileName,
                 return false;
             }
             
-            cout << "Robot point " << point << ": " << x << ", " << y << endl;
             dynamic_cast<sf::ConvexShape*>(shape.get())->setPoint(point, sf::Vector2f(x, y));
             point++;
         }
@@ -94,7 +93,6 @@ bool ReadFile(string fileName,
             cout << "Failed to read robot position" << endl;
             return false;
         }
-        cout << "Robot position: " << x << ", " << y << endl;
         CenterPosition(shape.get(), point_type(x, y, 0));
     }
 
@@ -124,7 +122,6 @@ bool ReadFile(string fileName,
                 return false;
             }
             
-            cout << "Obstacle point " << point << ": " << x << ", " << y << endl;
             dynamic_cast<sf::ConvexShape*>(shape.get())->setPoint(point, sf::Vector2f(x, y));
             point++;
         }
@@ -136,13 +133,10 @@ bool ReadFile(string fileName,
                 cout << "Failed to read robot position" << endl;
                 return false;
             }
-            cout << "Obstacle position: " << x << ", " << y << endl;
             CenterPosition(shape.get(), point_type(x, y, 0));
         }
 
         sf::FloatRect rect = shape->getLocalBounds();
-
-        cout << "Center of obstacle: " << rect.width/2 << " " << rect.height/2 << endl;
 
         shape->setFillColor(sf::Color::Blue);
         polygonObstacles.push_back(shape);

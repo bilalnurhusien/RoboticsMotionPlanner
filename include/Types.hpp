@@ -47,6 +47,8 @@ const char Char_p = 'p';
 const char Char_o = 'o';
 const char Char_i = 'i';
 const uint32_t Frame_Delay_Ms = 200;
+const float Pi = 3.14159265f;
+
 
 const float ObstacleCoordinates[MaxNumObstacles][2] =
 {

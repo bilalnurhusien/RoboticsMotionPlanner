@@ -66,6 +66,11 @@ CollisionDetector::~CollisionDetector()
 
 bool CollisionDetector::IsCollision(const point_type& p)
 {
+    if (!IsInWorkSpace(p.get<0>(), p.get<1>()))
+    {
+        return true;
+    }
+    
     CenterPosition(m_pRobot.get(), p);
 
     uint32_t verticesCount = m_pRobot->getPointCount();

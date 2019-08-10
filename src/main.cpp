@@ -54,9 +54,9 @@ int32_t main(int argc, char *argv[])
     sf::Clock clock;
 
     uint32_t maxNumNodes = 500;
-    uint32_t maxOfNumNeighbors = 5;
+    uint32_t maxOfNumNeighbors = 7;
 
-    float minDistance = 1.f;
+    float minDistance = 50.f;
     bool displayConfigSpace = false;
     bool fullScreen = false;
     bool displayPointLocations = false;
@@ -67,15 +67,6 @@ int32_t main(int argc, char *argv[])
     if (!ProcessArguments(argc, argv, robot, polygonObstacles, fullScreen, maxNumNodes, minDistance))
     {
         return -1;
-    }
-
-    if (fullScreen)
-    {
-        window.create(sf::VideoMode(WindowSizeX, WindowSizeY), "Project: Path Planning", sf::Style::Fullscreen);
-    }
-    else
-    {
-        window.create(sf::VideoMode(WindowSizeX, WindowSizeY), "Project: Path Planning", sf::Style::Default);
     }
 
     /* Position dot at center of robot */
@@ -89,9 +80,11 @@ int32_t main(int argc, char *argv[])
     bool result = motionPlanning.CreateRoadMap(maxNumNodes, maxOfNumNeighbors, minDistance, point_type(robot->getPosition().x, robot->getPosition().y, robot->getRotation()));
     if (!result)
     {
-        cout << "Failed to create roadmap";
+        cout << "Failed to create roadmap" << endl;
         return -1;
     }
+
+    cout << "Creating window, robot, and obstacles..." << endl;
     
     GetRoadMap(motionPlanning, roadMapVertices, roadMapEdges);
 
@@ -106,6 +99,16 @@ int32_t main(int argc, char *argv[])
     text.setFont(font);
     text.setCharacterSize(18); 
     text.setColor(sf::Color::White);
+
+    if (fullScreen)
+    {
+        window.create(sf::VideoMode(WindowSizeX, WindowSizeY), "Project: Path Planning", sf::Style::Fullscreen);
+    }
+    else
+    {
+        window.create(sf::VideoMode(WindowSizeX, WindowSizeY), "Project: Path Planning", sf::Style::Default);
+    }
+
     window.clear();
 
     while (window.isOpen())
@@ -202,15 +205,6 @@ int32_t main(int argc, char *argv[])
         {
             for (uint32_t i = 0; i  < roadMapVertices.size(); ++i)
             {
-                sf::Vector2f coord = roadMapVertices[i]->getPosition();
-
-                /* Write coordinates above each roadmap vertex */
-                if (displayPointLocations)
-                {
-                    text.setPosition(coord.x - DotRadiusSize, coord.y - 3 * DotRadiusSize);
-                    text.setString(ToStringSetPrecision(coord.x, 0) + ", " + ToStringSetPrecision(coord.y, 0) + ", " + ToStringSetPrecision(roadMapVertices[i]->getRotation(), 0));
-                    window.draw(text);
-                }
                 window.draw(*roadMapVertices[i]);
             }
             
@@ -232,12 +226,30 @@ int32_t main(int argc, char *argv[])
             {
                 for (uint32_t i = 0; i < robot->getPointCount(); ++i)
                 {
-                    float x = robot->getPosition().x + robot->getPoint(i).x;
-                    float y = robot->getPosition().y + robot->getPoint(i).y;
-                    
+                    float x = 0;
+                    float y = 0;
                     sf::FloatRect rect = robot->getLocalBounds();
 
-                    text.setPosition(x - rect.width/2, y - rect.height/2);
+                    if (robot->getPoint(i).x < (rect.width / 2))
+                    {
+                        x = robot->getPosition().x - robot->getPoint(i).x;
+                    }
+                    else
+                    {
+                        x = robot->getPosition().x + robot->getPoint(i).x;
+                    }
+                    
+                    
+                    if (robot->getPoint(i).y < (rect.height / 2))
+                    {
+                        y = robot->getPosition().y - robot->getPoint(i).y;
+                    }
+                    else
+                    {
+                        y = robot->getPosition().y + robot->getPoint(i).y;
+                    }                    
+
+                    text.setPosition(x, y);
                     text.setString(ToStringSetPrecision(x, 0) + ", " + ToStringSetPrecision(y, 0));
                     window.draw(text);
                 }
@@ -255,14 +267,32 @@ int32_t main(int argc, char *argv[])
                 
                 if (displayPointLocations)
                 {
+                    float x = 0;
+                    float y = 0;
+
+                    sf::FloatRect rect = polygonObstacles[i]->getLocalBounds();
                     for (uint32_t j = 0; j < polygonObstacles[i]->getPointCount(); ++j)
                     {
-                        float x = polygonObstacles[i]->getPosition().x + polygonObstacles[i]->getPoint(j).x;
-                        float y = polygonObstacles[i]->getPosition().y + polygonObstacles[i]->getPoint(j).y;
+                        if (polygonObstacles[i]->getPoint(j).x < rect.width / 2)
+                        {
+                            x = polygonObstacles[i]->getPosition().x - polygonObstacles[i]->getPoint(j).x;
+                        }
+                        else
+                        {
+                            x = polygonObstacles[i]->getPosition().x + polygonObstacles[i]->getPoint(j).x;
+                        }
                         
-                        sf::FloatRect rect = polygonObstacles[i]->getLocalBounds();
-
-                        text.setPosition(x - rect.width/2, y - rect.height/2);
+                        
+                        if (polygonObstacles[i]->getPoint(j).y < rect.height / 2)
+                        {
+                            y = polygonObstacles[i]->getPosition().y - polygonObstacles[i]->getPoint(j).y;
+                        }
+                        else
+                        {
+                            y = polygonObstacles[i]->getPosition().y + polygonObstacles[i]->getPoint(j).y;
+                        }                    
+                        
+                        text.setPosition(x, y);
                         text.setString(ToStringSetPrecision(x, 0) + ", " + ToStringSetPrecision(y, 0));
                         window.draw(text);
                     }
