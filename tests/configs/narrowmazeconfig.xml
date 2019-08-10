@@ -26,7 +26,7 @@
 			<position>1300,375</position>
                 </obstacle>
 		<obstacle>
-                        <points>0,0 150,0 150,175 0,175</points>
+                        <points>0,0 1000,0 1000,200 0,200</points>
 			<position>800,100</position>
 		</obstacle>
                 <obstacle>
