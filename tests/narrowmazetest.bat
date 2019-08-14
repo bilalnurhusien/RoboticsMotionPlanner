@@ -1,1 +1,1 @@
-../pathplanning -i configs/narrowmazeconfig.xml -n 600 -f 
+../pathplanning -i configs/narrowmazeconfig.xml -n 800 -f -d 20 

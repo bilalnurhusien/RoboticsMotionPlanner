@@ -10,14 +10,17 @@
 #include <limits>
 #include <algorithm>
 #include <list>
+#include <time.h>
 
 #include "../include/Helpers.hpp"
 
 
 using namespace std;
 
-MotionPlanning::MotionPlanning(const shared_ptr<CollisionDetector>&  pCollisionDetector)
-    : m_pCollisionDetector(pCollisionDetector)
+MotionPlanning::MotionPlanning(const vector<shared_ptr<sf::Shape> >& polygonObstacles,
+                               const shared_ptr<CollisionDetector>&  pCollisionDetector)
+    : m_polygonObstacles(polygonObstacles),
+      m_pCollisionDetector(pCollisionDetector)
 {
     /* initialize random seed: */
     srand (time(NULL));
@@ -25,6 +28,7 @@ MotionPlanning::MotionPlanning(const shared_ptr<CollisionDetector>&  pCollisionD
 
 MotionPlanning::~MotionPlanning()
 {
+    m_polygonObstacles.clear();
     m_pCollisionDetector = nullptr;
 }
 
@@ -71,6 +75,14 @@ void MotionPlanning::SelectRandomCoordinate(uint32_t& x, uint32_t& y, uint32_t& 
     t = rand() % 360;
 }
 
+void MotionPlanning::SelectRandomObstacleCoordinate(uint32_t& x, uint32_t& y, uint32_t& t)
+{
+    uint32_t i = rand() % m_polygonObstacles.size();
+    x = m_polygonObstacles[i]->getPosition().x;
+    y = m_polygonObstacles[i]->getPosition().y;
+    t = rand() % 360;
+}
+
 bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeighbors, float minDistance, point_type robotStart)
 {
     cout << "Step 1 of 2: Creating roadmap vertices..." << endl;
@@ -82,10 +94,11 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
 
     const uint32_t MaxTotalRetries = 5;
     const uint32_t MaxRandomSelectTries = 20;
-    const uint32_t IncrementValue = 10;
+    const uint32_t IncrementValue = 40;
     uint32_t totalRetries = 0;
     float progress = 0;
-
+    time_t start,end;
+    time (&start);
     bool success = false;
     m_rtree.clear();
     m_pGraph->clear();
@@ -93,7 +106,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
     for (uint32_t totalRetries = 0; (totalRetries < MaxTotalRetries) && !success; ++totalRetries)
     {
         uint32_t i = 0;
-        uint32_t openNodes = maxNumOfNodes/8.f;
+        uint32_t openNodes = maxNumOfNodes * 0.1f;
 
         for (; i < openNodes; ++i)
         {
@@ -101,6 +114,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
             uint32_t x = 0;
             uint32_t y = 0;
             uint32_t t = 0;
+            
             bool collision = true;
             float distance = std::numeric_limits<float>::min();
 
@@ -127,6 +141,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
             {
                 break;
             }
+            
 
             /* Insert new value into graph and rtree */
             Vertex_t vertex;
@@ -176,7 +191,8 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
              **/
             do
             {
-                SelectRandomCoordinate(x, y, t);
+                SelectRandomObstacleCoordinate(x, y, t);                
+                
                 if (!(collision = m_pCollisionDetector->IsCollision(point_type(x, y, t))))
                 {
                     continue;
@@ -187,7 +203,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
                      * If collision is detected, go in a random direction until
                      * Cfree is reached or the end of the workspace
                      */
-                    float randomDirection = fmod(rand(), Pi);
+                    float randomDirection = fmod(rand(), 2*Pi);
                     
                     while (IsInWorkSpace(x, y))
                     {
@@ -202,6 +218,12 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
 
                             break;
                         }
+                    }
+                    
+                    if ((!IsInWorkSpace(x, y)) ||
+                        (distance < minDistance))
+                    {
+                        continue;
                     }
                 }
 
@@ -230,10 +252,13 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
             }
         }
 
+        time (&end);
+        double diff = difftime (end,start);
         if (i >= maxNumOfNodes)
         {
             progress = 100.f;
             cout << "\rProgress: " << ToStringSetPrecision(progress, 0)  << "%" << endl;
+            cout << "Time: " << ToStringSetPrecision(diff, 2) << " seconds" << endl;
             success = true;
             break;
         }
@@ -268,6 +293,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
     cout << "Step 2 of 2: Creating roadmap edges..." << endl;
     progress = 0;
     uint32_t i = 0;
+    time (&start);
 
     /*
      * Create edges between vertices in graph 
@@ -317,7 +343,10 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
     m_maxNumOfNeighbors = maxNumOfNeighbors;
 
     AddVertex(robotStart);
+    time (&end);
+    double diff = difftime (end,start);
     cout << "\rProgress: " << ToStringSetPrecision(100, 0)  << "%" << endl;
+    cout << "Time: " << ToStringSetPrecision(diff, 2) << " seconds" << endl;
     cout << "Num vertices: " << boost::num_vertices(*m_pGraph) << endl;
     cout << "Minimum distance: " << minDistance << endl;
 

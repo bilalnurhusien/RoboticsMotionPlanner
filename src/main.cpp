@@ -56,7 +56,7 @@ int32_t main(int argc, char *argv[])
     uint32_t maxNumNodes = 500;
     uint32_t maxOfNumNeighbors = 7;
 
-    float minDistance = 50.f;
+    float minDistance = 20.f;
     bool displayConfigSpace = false;
     bool fullScreen = false;
     bool displayPointLocations = false;
@@ -75,7 +75,7 @@ int32_t main(int argc, char *argv[])
     
     /* Create motion planning roadmap */
     shared_ptr<CollisionDetector> pCollisionDetector = make_shared<CollisionDetector>(polygonObstacles, robot);
-    MotionPlanning motionPlanning(pCollisionDetector);
+    MotionPlanning motionPlanning(polygonObstacles, pCollisionDetector);
 
     bool result = motionPlanning.CreateRoadMap(maxNumNodes, maxOfNumNeighbors, minDistance, point_type(robot->getPosition().x, robot->getPosition().y, robot->getRotation()));
     if (!result)

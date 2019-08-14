@@ -124,6 +124,14 @@ bool CollisionDetector::IsPathCollision(point_type p1, point_type p2)
     //
     std::vector<point_type> vecP;
 
+    point_type halfPoint;
+    halfPoint.set<0>(p2.get<0>() + (p1.get<0>() - p2.get<0>()) * 0.5);
+    halfPoint.set<1>(p2.get<1>() + (p1.get<1>() - p2.get<1>()) * 0.5);
+    halfPoint.set<2>(p2.get<2>() + (p1.get<2>() - p2.get<2>()) * 0.5);
+    if (IsCollision(halfPoint))
+    {
+        return true;
+    }
     for (float t = 0; t <= 1.f; t+=0.1f)
     {
         point_type newPoint;

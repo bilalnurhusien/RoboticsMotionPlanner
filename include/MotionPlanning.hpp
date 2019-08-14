@@ -52,7 +52,8 @@ class MotionPlanning
 {
     
 public:
-    explicit MotionPlanning(const std::shared_ptr<CollisionDetector>&  pCollisionDetector);
+    explicit MotionPlanning(const std::vector<std::shared_ptr<sf::Shape> >& polygonObstacles, 
+                            const std::shared_ptr<CollisionDetector>&  pCollisionDetector);
     
     /**
      * @brief Create road map
@@ -99,6 +100,9 @@ private:
      */
     void SelectRandomCoordinate(uint32_t& x, uint32_t& y, uint32_t& t);
 
+    void SelectRandomObstacleCoordinate(uint32_t& x, uint32_t& y, uint32_t& t);
+
+
     /**
      * @brief Get minimum distance from neighboring point(s)
      * @param x - x-coord point to consider
@@ -115,7 +119,7 @@ private:
     std::shared_ptr<UndirectedGraph> m_pGraph = std::make_shared<UndirectedGraph>();
     size_t RemoveId(point_type p);
     uint32_t m_maxNumOfNeighbors;
-
+    std::vector<std::shared_ptr<sf::Shape> > m_polygonObstacles;
     /**
      * @brief Find vertex
      * @param p
