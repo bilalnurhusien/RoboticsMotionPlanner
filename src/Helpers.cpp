@@ -8,9 +8,10 @@
 #include <set>
 #include <exception>
 #include <iostream>
-namespace pt = boost::property_tree;
 
 #include "../include/Helpers.hpp"
+
+namespace pt = boost::property_tree;
 
 using namespace std;
 
@@ -50,18 +51,14 @@ bool ReadFile(string fileName,
               shared_ptr<sf::Shape>& robot,
               vector<shared_ptr<sf::Shape> >& polygonObstacles)
 {
-     // Create empty property tree object
     pt::ptree tree;
 
-    // Parse the XML into the property tree.
     pt::read_xml(fileName, tree);
 
-    // Use the throwing version of get to find the debug filename.
-    // If the path cannot be resolved, an exception is thrown.
     tree.get<string>("config.filename");
     string robotPosition = tree.get<string>("config.robot.position");
     string robotPoints = tree.get<string>("config.robot.points");
-    // The data function is used to access the data stored in a node.
+
     shared_ptr<sf::Shape> shape = make_shared<sf::ConvexShape>();
     size_t n = std::count(robotPoints.begin(), robotPoints.end(), ',');
     dynamic_cast<sf::ConvexShape*>(shape.get())->setPointCount(n);
@@ -483,43 +480,6 @@ bool GetAngleOfNormalVectors(const vector<vector<sf::Vertex> >& normalVectors,
     return true;
 }
 
-
-/**
- * Combine list of normal vectors
- */
-void MergeAngleOfNormalVectors(const vector<sf::CircleShape>& vecShapes,
-                               const vector<float>& angleOfNormalVectors1,
-                               const vector<float>& angleOfNormalVectors2,
-                               vector<PolygonVertex>& sortedPolygonVertices)
-{
-    size_t vertexCount1 = vecShapes[0].getPointCount();
-    size_t vertexCount2 = vecShapes[1].getPointCount();
-
-    int32_t i = 0;
-    int32_t j = 0;
-
-    while (i < angleOfNormalVectors1.size())
-    {
-        PolygonVertex polygonVertex;
-        polygonVertex.normalAngle = angleOfNormalVectors1[i];
-        polygonVertex.vector = vecShapes[0].getPoint(i);
-        polygonVertex.polygonType = PolygonType::Robot;
-        sortedPolygonVertices.push_back(polygonVertex);
-        ++i;
-    }
-
-    while (j < angleOfNormalVectors2.size())
-    {       
-        PolygonVertex polygonVertex;
-        polygonVertex.normalAngle = angleOfNormalVectors2[j];
-        polygonVertex.vector = vecShapes[1].getPoint(j);
-        polygonVertex.polygonType = PolygonType::Obstacle;
-        sortedPolygonVertices.push_back(polygonVertex);
-        ++j;
-    }
-    
-    sort(sortedPolygonVertices.begin(), sortedPolygonVertices.end(), PolygonVertex::CompAngles);
-}
 
 /**
  * @brief Is in workspace

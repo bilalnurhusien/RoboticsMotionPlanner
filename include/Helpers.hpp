@@ -7,7 +7,7 @@
 #include <memory>
 
 /**
-  * @brief rint help messages
+  * @brief Print help messages
   */
 void PrintHelp();
 
@@ -17,6 +17,9 @@ void PrintHelp();
  * @param argvp - array of argument strings
  * @param robot -  robot to initialize
  * @param polygonObstacles - polygon obstacles in workspace
+ * @param fullScreen - display window as fullscreen
+ * @param numNodes - number of nodes
+ * @param nodeDistance - minimum distance between nodes
  * @return 
  */
 bool ProcessArguments(int argc,
@@ -56,22 +59,6 @@ void GetNormalVectors(const sf::CircleShape& shape,
  */
 bool GetAngleOfNormalVectors(const std::vector<std::vector<sf::Vertex> >& normalVectors,
                              std::vector<float>& angleOfNormalVectors);
-
-/**
- * @brief Merge list of angle of normal vectors in order
- * @param vecShapes - polygon shapes
- * @param angleOfNormalVectors1 - angle of normal vectors for shape 1
- * @param angleOfNormalVectors2 - angle of normal vectors for shape 2
- * @param polygonVertices - combined list of vertices
- */
-void MergeAngleOfNormalVectors(const std::vector<sf::ConvexShape>& vecShapes,
-                               const std::vector<float>& angleOfNormalVectors1,
-                               const std::vector<float>& angleOfNormalVectors2,
-                               std::vector<PolygonVertex>& polygonVertices);
-void MergeAngleOfNormalVectors(const std::vector<sf::CircleShape>& vecShapes,
-                               const std::vector<float>& angleOfNormalVectors1,
-                               const std::vector<float>& angleOfNormalVectors2,
-                               std::vector<PolygonVertex>& polygonVertices);
 
 /**
  * Check if point is in workspace

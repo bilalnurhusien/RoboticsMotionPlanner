@@ -8,7 +8,7 @@ if test -f $DIR/../$PROG; then
     PUSHED=1;
 fi
 
-./pathplanning -i $DIR/configs/narrowmazeconfig.xml -n 700 -f -d 20
+./pathplanning -i $DIR/configs/narrowmazeconfig.xml -n 800 -f -d 20
 
 if [ "$PUSHED" -eq "1" ]; then
    popd;

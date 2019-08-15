@@ -14,6 +14,10 @@ CollisionDetector::CollisionDetector(const vector<shared_ptr<sf::Shape> >& polyg
 {
     sf::CircleShape* circleShape = nullptr;
     sf::ConvexShape* convexShape = nullptr;
+
+    /*
+     * Make a copy of the robot for detecting collisions
+     */ 
     if (circleShape = dynamic_cast<sf::CircleShape*>(pRobot.get()))
     {
         m_pRobot = make_shared<sf::CircleShape>(*circleShape);
@@ -51,6 +55,7 @@ CollisionDetector::CollisionDetector(const vector<shared_ptr<sf::Shape> >& polyg
 #ifdef DEBUG
         cout << out.str() << endl;
 #endif
+
         polygon_type poly;
         bg::read_wkt(
             out.str(),
@@ -93,6 +98,7 @@ bool CollisionDetector::IsCollision(const point_type& p)
 #ifdef DEBUG
     cout << out.str() << endl;
 #endif
+
     polygon_type poly;
     bg::read_wkt(
         out.str(),
@@ -116,7 +122,7 @@ bool CollisionDetector::IsCollision(const point_type& p)
 bool CollisionDetector::IsPathCollision(point_type p1, point_type p2)
 {
     //
-    // Use a parameterization to create points along line segment
+    // Use a parameterization to discretize the path
     //
     // x(t) = a1+(a1−b1)t,  0≤t≤1.
     // y(t) = a2+(a2−b2)t,  0≤t≤1.
@@ -128,10 +134,12 @@ bool CollisionDetector::IsPathCollision(point_type p1, point_type p2)
     halfPoint.set<0>(p2.get<0>() + (p1.get<0>() - p2.get<0>()) * 0.5);
     halfPoint.set<1>(p2.get<1>() + (p1.get<1>() - p2.get<1>()) * 0.5);
     halfPoint.set<2>(p2.get<2>() + (p1.get<2>() - p2.get<2>()) * 0.5);
+
     if (IsCollision(halfPoint))
     {
         return true;
     }
+
     for (float t = 0; t <= 1.f; t+=0.1f)
     {
         point_type newPoint;

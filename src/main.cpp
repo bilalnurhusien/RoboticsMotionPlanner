@@ -41,7 +41,6 @@ void GetRoadMap(MotionPlanning& motionPlanning,
 
 int32_t main(int argc, char *argv[])
 {
-
     sf::RenderWindow window;
     shared_ptr<sf::Shape> robot;
     shared_ptr<sf::CircleShape> robotDot = make_shared<sf::CircleShape>(DotRadiusSize);
@@ -249,7 +248,7 @@ int32_t main(int argc, char *argv[])
                         y = robot->getPosition().y + robot->getPoint(i).y;
                     }                    
 
-                    text.setPosition(x, y);
+                    text.setPosition(x - rect.width/2, y - rect.height/2);
                     text.setString(ToStringSetPrecision(x, 0) + ", " + ToStringSetPrecision(y, 0));
                     window.draw(text);
                 }
@@ -292,7 +291,7 @@ int32_t main(int argc, char *argv[])
                             y = polygonObstacles[i]->getPosition().y + polygonObstacles[i]->getPoint(j).y;
                         }                    
                         
-                        text.setPosition(x, y);
+                        text.setPosition(x - rect.width/2, y - rect.height/2);
                         text.setString(ToStringSetPrecision(x, 0) + ", " + ToStringSetPrecision(y, 0));
                         window.draw(text);
                     }

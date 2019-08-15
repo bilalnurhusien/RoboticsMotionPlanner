@@ -1,10 +1,9 @@
 #include "../include/MotionPlanning.hpp"
 #include "../include/CollisionDetector.hpp"
 #include <boost/function_output_iterator.hpp>
-#include <boost/graph/graphviz.hpp>
-#include <boost/graph/properties.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/operators.hpp>
+#include <boost/foreach.hpp>
 #include <boost/ref.hpp>
 #include <boost/graph/graph_utility.hpp>
 #include <limits>
@@ -77,6 +76,14 @@ void MotionPlanning::SelectRandomCoordinate(uint32_t& x, uint32_t& y, uint32_t& 
 
 void MotionPlanning::SelectRandomObstacleCoordinate(uint32_t& x, uint32_t& y, uint32_t& t)
 {
+    /*
+     * If no obstacle in workspace, select a random coordinate
+     */
+    if (m_polygonObstacles.empty())
+    {
+        return SelectRandomCoordinate(x, y, t);
+    }
+
     uint32_t i = rand() % m_polygonObstacles.size();
     x = m_polygonObstacles[i]->getPosition().x;
     y = m_polygonObstacles[i]->getPosition().y;
@@ -95,6 +102,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
     const uint32_t MaxTotalRetries = 5;
     const uint32_t MaxRandomSelectTries = 20;
     const uint32_t IncrementValue = 40;
+    const float FractionOfRandomNodesInFreeSpace= 0.1f;
     uint32_t totalRetries = 0;
     float progress = 0;
     time_t start,end;
@@ -106,7 +114,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
     for (uint32_t totalRetries = 0; (totalRetries < MaxTotalRetries) && !success; ++totalRetries)
     {
         uint32_t i = 0;
-        uint32_t openNodes = maxNumOfNodes * 0.1f;
+        uint32_t openNodes = maxNumOfNodes * FractionOfRandomNodesInFreeSpace;
 
         for (; i < openNodes; ++i)
         {
@@ -163,6 +171,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
             //
             m_rtree.clear();
             m_pGraph->clear();
+
             if (maxNumOfNodes > 5)
             {
                 maxNumOfNodes -= 5;
@@ -186,8 +195,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
             float distance = std::numeric_limits<float>::min();
 
             /*
-             * Randomly select a point that is at least
-             * MinDistance away from any neighboring point
+             * Randomly select a point that is neighbouring an obstacle
              **/
             do
             {

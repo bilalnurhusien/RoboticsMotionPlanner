@@ -1,11 +1,6 @@
 #pragma once
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/box.hpp>
-#include <boost/geometry/geometries/point_xy.hpp>
 
-#include <boost/geometry/index/rtree.hpp>
 #include <iostream>
-#include <boost/geometry.hpp>
 
 #include "Types.hpp"
 
@@ -19,6 +14,12 @@ class CollisionDetector
    
 public:
     
+    /**
+     * @brief C'tor
+     * @param polygonObstacles - obstacles
+     * @param robot - robot
+     * @return 
+     */
     explicit CollisionDetector(const std::vector<std::shared_ptr<sf::Shape> >& polygonObstacles,
                                const std::shared_ptr<sf::Shape>& robot);
 
@@ -31,10 +32,10 @@ public:
      */
     bool IsCollision(const point_type& p);
     /**
-     * @brief Detects if line segment intersects any of the polygon obstacles
+     * @brief Detects if path intersects any of the polygon obstacles
      * @param p1 - point 1
      * @param p2 - point 2
-     * @return 
+     * @return true or false
      */
     bool IsPathCollision(point_type p1, point_type p2);
 

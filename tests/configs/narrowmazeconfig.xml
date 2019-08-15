@@ -1,14 +1,10 @@
 <config>
     <filename>config.xml</filename>
     	<robot>
-        	<points>0,0 125,0 125,50 0,50</points>
+        	<points>0,0 50,0 50,150 0,150</points>
         	<position>200,200</position>
     	</robot>
 	<obstacles>
-                <obstacle>      
-                        <points>0,0 150,0 150,175 0,175</points>
-			<position>300,375</position>
-                </obstacle>
                 <obstacle>      
                         <points>0,0 150,0 150,175 0,175</points>
 			<position>550,375</position>
@@ -21,18 +17,10 @@
                         <points>0,0 150,0 150,175 0,175</points>
 			<position>1050,375</position>
                 </obstacle>
-                <obstacle>      
-                        <points>0,0 150,0 150,175 0,175</points>
-			<position>1300,375</position>
-                </obstacle>
 		<obstacle>
                         <points>0,0 1000,0 1000,200 0,200</points>
 			<position>800,100</position>
 		</obstacle>
-                <obstacle>
-                        <points>0,0 150,0 150,150 0,150</points>
-                        <position>300,625</position>
-                </obstacle>
                 <obstacle>
                         <points>0,0 150,0 150,150 0,150</points>
                         <position>550,625</position>
@@ -46,12 +34,8 @@
                         <position>1050,625</position>
                 </obstacle>
                 <obstacle>
-                        <points>0,0 150,0 150,150 0,150</points>
-                        <position>1300,625</position>
-                </obstacle>
-                <obstacle>
                         <points>0,0 1000,0 1000,200 1000,200 0,200</points>
-                        <position>800,880</position>
+                        <position>800,900</position>
                 </obstacle>
 	</obstacles>
 </config>

@@ -1,13 +1,7 @@
 #pragma once
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/box.hpp>
-#include <boost/geometry/geometries/point_xy.hpp>
-#include <boost/geometry/geometries/register/point.hpp>
-#include <boost/foreach.hpp>
 
-#include "boost/graph/graph_traits.hpp"
-#include "boost/graph/adjacency_list.hpp"
-
+#include <boost/graph/graph_traits.hpp>
+#include <boost/graph/adjacency_list.hpp>
 #include <boost/geometry/index/rtree.hpp>
 #include <iostream>
 #include <memory>
@@ -15,6 +9,8 @@
 
 #include "Types.hpp"
 #include "CollisionDetector.hpp"
+
+namespace bgi = boost::geometry::index;
 
 //
 // Create a struct to hold properties for each vertex
@@ -41,7 +37,6 @@ typedef boost::graph_traits<UndirectedGraph>::vertex_descriptor vertex_descripto
 typedef UndirectedGraph::edge_descriptor edge_descriptor_t;
 typedef std::vector<edge_descriptor_t> path_t;
 
-namespace bgi = boost::geometry::index;
 
 /**
  * @class MotionPlanning
@@ -100,6 +95,11 @@ private:
      */
     void SelectRandomCoordinate(uint32_t& x, uint32_t& y, uint32_t& t);
 
+    /**
+     * @brief Select random coordinate that's in an obstacle
+     * @param x
+     * @param y
+     */
     void SelectRandomObstacleCoordinate(uint32_t& x, uint32_t& y, uint32_t& t);
 
 
@@ -111,15 +111,6 @@ private:
      */
     float GetMinDistanceFromNeighbors(uint32_t x, uint32_t y, uint32_t t);
 
-
-    bgi::rtree< value, bgi::rstar<16> > m_rtree;
-    std::shared_ptr<CollisionDetector>  m_pCollisionDetector = nullptr;
-    bool m_isInit = false;
-    std::vector<point_type> m_points;
-    std::shared_ptr<UndirectedGraph> m_pGraph = std::make_shared<UndirectedGraph>();
-    size_t RemoveId(point_type p);
-    uint32_t m_maxNumOfNeighbors;
-    std::vector<std::shared_ptr<sf::Shape> > m_polygonObstacles;
     /**
      * @brief Find vertex
      * @param p
@@ -137,5 +128,13 @@ private:
         
         throw std::range_error("Vertex not found -> x: " + std::to_string(p.get<0>()) + ", y: " + std::to_string(p.get<1>()));
     }
+
+    bgi::rtree< value, bgi::rstar<16> > m_rtree;
+    std::shared_ptr<CollisionDetector>  m_pCollisionDetector = nullptr;
+    std::vector<point_type> m_points;
+    std::shared_ptr<UndirectedGraph> m_pGraph = std::make_shared<UndirectedGraph>();
+    size_t RemoveId(point_type p);
+    uint32_t m_maxNumOfNeighbors;
+    std::vector<std::shared_ptr<sf::Shape> > m_polygonObstacles;
 };
 
