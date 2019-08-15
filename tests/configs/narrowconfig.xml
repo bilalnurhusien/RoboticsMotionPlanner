@@ -1,7 +1,7 @@
 <config>
     <filename>config.xml</filename>
     	<robot>
-        	<points>0,0 100,0 100,50 0,50</points>
+        	<points>0,0 50,0 50,150 0,150</points>
         	<position>200,200</position>
     	</robot>
 	<obstacles>
