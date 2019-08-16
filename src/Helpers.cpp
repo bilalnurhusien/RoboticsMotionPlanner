@@ -22,7 +22,7 @@ void PrintHelp()
 {
     cout << "Usage:" << endl;
     cout << "\t./pathplanning -r <num-of-robot-vertices> -o <num-of-obstacles> | -i <csv-input-file>" << endl;
-    cout << "\t-r: Number of robot vertices" << endl;
+    cout << "\t\t-r: Number of robot vertices" << endl;
     cout << "\t-o: Number of obstacles" << endl;
     cout << "\t-f: Full screen" << endl;
     cout << "\t-i: CSV input file" << endl;

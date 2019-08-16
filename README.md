@@ -49,13 +49,13 @@
 #### Rectangle robot with more difficult narrow passage workspace
 	$ ./pathplanning -i tests/configs/narrowuconfig.xml
 
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMaze.jpg)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowUPassage.jpg)
 
 #### Left click on the window to to cause the robot to move to the selected position
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMazePath.jpg)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowUPassagePath.jpg)
 
 #### Right click to see the PRM graph in C-space
 
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMazeCSpace.jpg)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowUPassageCSpace.jpg)
 
 
