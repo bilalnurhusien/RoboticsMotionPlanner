@@ -10,7 +10,8 @@
 	$ make
 
 ### Usage:
-	./pathplanning -r <num-of-robot-vertices> -o <num-of-obstacles> | -i <csv-input-file>
+	$ ./pathplanning -r <num-of-robot-vertices> -o <num-of-obstacles> | -i <csv-input-file>
+
 		-r: Number of robot vertices
 		-o: Number of obstacles
 		-f: Full screen
