@@ -11,18 +11,18 @@
 
 ### Usage:
 	./pathplanning -r <num-of-robot-vertices> -o <num-of-obstacles> | -i <csv-input-file>
-	-r: Number of robot vertices
-	-o: Number of obstacles
-	-f: Full screen
-	-i: CSV input file
-	-n: Number of nodes in PRM graph
-	-d: Minimum distance between PRM nodes
-	Example:
-		# Input CSV file
-		$./pathplanning -i inputconfig.xml
+		-r: Number of robot vertices
+		-o: Number of obstacles
+		-f: Full screen
+		-i: CSV input file
+		-n: Number of nodes in PRM graph
+		-d: Minimum distance between PRM nodes
+		Example:
+			# Input CSV file
+			$./pathplanning -i inputconfig.xml
 
-		# For a triangle robot with 5 obstacles in full screen workspace with 500 nodes in PRM
-		$./pathplanning -r 3 -o 5 -f -n 500
+			# For a triangle robot with 5 obstacles in full screen workspace with 500 nodes in PRM
+			$./pathplanning -r 3 -o 5 -f -n 500
 
 	
 ### Library Installation:
@@ -36,25 +36,25 @@
 #### Rectangle robot with narrow passage workspace
 	$ ./pathplanning -i tests/configs/narrowbottomconfig.xml
 
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassage.PNG)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassage.JPG)
 
 #### Left click on the window to to cause the robot to move to the selected position
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassagePath.PNG)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassagePath.JPG)
 
 #### Right click to see the PRM graph in C-space
 
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassageCSpace.PNG)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassageCSpace.JPG)
 
 #### Rectangle robot with more difficult narrow passage workspace
 	$ ./pathplanning -i tests/configs/narrowbottomconfig.xml
 
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMaze.PNG)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMaze.JPG)
 
 #### Left click on the window to to cause the robot to move to the selected position
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMazePath.PNG)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMazePath.JPG)
 
 #### Right click to see the PRM graph in C-space
 
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMazeCSpace.PNG)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMazeCSpace.JPG)
 
 
