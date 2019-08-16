@@ -47,7 +47,7 @@
 ![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassageCSpace.jpg)
 
 #### Rectangle robot with more difficult narrow passage workspace
-	$ ./pathplanning -i tests/configs/narrowbottomconfig.xml
+	$ ./pathplanning -i tests/configs/narrowuconfig.xml
 
 ![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMaze.jpg)
 
@@ -56,6 +56,6 @@
 
 #### Right click to see the PRM graph in C-space
 
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMazeCSpace.JPG)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMazeCSpace.jpg)
 
 
