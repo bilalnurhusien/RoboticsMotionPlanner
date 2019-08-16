@@ -37,22 +37,22 @@
 #### Rectangle robot with narrow passage workspace
 	$ ./pathplanning -i tests/configs/narrowbottomconfig.xml
 
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassage.JPG)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassage.jpg)
 
 #### Left click on the window to to cause the robot to move to the selected position
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassagePath.JPG)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassagePath.jpg)
 
 #### Right click to see the PRM graph in C-space
 
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassageCSpace.JPG)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassageCSpace.jpg)
 
 #### Rectangle robot with more difficult narrow passage workspace
 	$ ./pathplanning -i tests/configs/narrowbottomconfig.xml
 
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMaze.JPG)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMaze.jpg)
 
 #### Left click on the window to to cause the robot to move to the selected position
-![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMazePath.JPG)
+![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowMazePath.jpg)
 
 #### Right click to see the PRM graph in C-space
 
