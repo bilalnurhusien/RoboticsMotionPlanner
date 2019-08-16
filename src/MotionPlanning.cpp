@@ -102,7 +102,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
     const uint32_t MaxTotalRetries = 5;
     const uint32_t MaxRandomSelectTries = 20;
     const uint32_t IncrementValue = 40;
-    const float FractionOfRandomNodesInFreeSpace= 0.1f;
+    const float FractionOfRandomNodes= 0.1f;
     uint32_t totalRetries = 0;
     float progress = 0;
     time_t start,end;
@@ -114,7 +114,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
     for (uint32_t totalRetries = 0; (totalRetries < MaxTotalRetries) && !success; ++totalRetries)
     {
         uint32_t i = 0;
-        uint32_t openNodes = maxNumOfNodes * FractionOfRandomNodesInFreeSpace;
+        uint32_t openNodes = maxNumOfNodes * FractionOfRandomNodes;
 
         for (; i < openNodes; ++i)
         {
@@ -313,19 +313,13 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
         cout << "\rProgress: " << ToStringSetPrecision(progress * 100, 0)  << "%";
         
         vector<value> neighbors;
-#ifdef DEBUG
-        cout << "Vertex: x - " <<  (*m_pGraph)[*vertexIter].p.get<0>() << " y - " << (*m_pGraph)[*vertexIter].p.get<1>() << endl;
-#endif
+
         m_rtree.query(bgi::nearest((*m_pGraph)[*vertexIter].p, maxNumOfNeighbors), std::back_inserter(neighbors));
 
         auto startId = FindVertexById((*m_pGraph)[*vertexIter].p);
 
         for (uint32_t j = 0; j < neighbors.size(); ++j)
         {
-            
-#ifdef DEBUG
-            cout << "Neighbor: x - " <<  neighbors[j].first.get<0>() << " y - " << neighbors[j].first.get<1>() << endl;
-#endif
             if (m_pCollisionDetector->IsPathCollision((*m_pGraph)[*vertexIter].p, neighbors[j].first))
             {
                 continue;
@@ -337,9 +331,7 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
             {
                 continue;
             }
-#ifdef DEBUG
-            cout << "Distance: " << dist << endl;
-#endif
+
             Vertex_t dest;
             dest.p = neighbors[j].first;
             auto neighborId = FindVertexById(dest.p);
@@ -372,9 +364,6 @@ int MotionPlanning::AddVertex(point_type p)
 
     for (uint32_t j = 0; j < neighbors.size(); ++j)
     {
-#ifdef DEBUG
-        cout << "Neighbor: x - " <<  neighbors[j].first.get<0>() << " y - " << neighbors[j].first.get<1>() << endl;
-#endif
         if (m_pCollisionDetector->IsPathCollision((*m_pGraph)[id].p, neighbors[j].first))
         {
             continue;
@@ -464,11 +453,6 @@ list<point_type> MotionPlanning::GetShortestPath(point_type start,
          * Ignore any points that can't be reached 
          **/
         size_t removeId = RemoveId((*m_pGraph)[e].p);
-#ifdef DEBUG
-        boost::print_graph(*m_pGraph, boost::get(boost::vertex_index, *m_pGraph));
-        cout << "Removing " << (*m_pGraph)[e].p << endl;
-        cout << "Removed: " <<  removeId << endl;
-#endif
         boost::clear_vertex(e, *m_pGraph);
         boost::remove_vertex(e, *m_pGraph);
     }
