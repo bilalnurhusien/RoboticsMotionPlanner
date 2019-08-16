@@ -42,7 +42,7 @@
 #### Left click on the window to to cause the robot to move to the selected position
 ![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassagePath.jpg)
 
-#### Right click to see the PRM graph in C-space
+#### Right click to see the 2D representation of the PRM graph in C-space
 
 ![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowPassageCSpace.jpg)
 
@@ -54,7 +54,7 @@
 #### Left click on the window to to cause the robot to move to the selected position
 ![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowUPassagePath.jpg)
 
-#### Right click to see the PRM graph in C-space
+#### Right click to see the 2D representation of the PRM graph in C-space
 
 ![alt text](https://github.com/bilalnurhusien/RoboticsMotionPlanner/blob/master/images/NarrowUPassageCSpace.jpg)
 
