@@ -21,14 +21,18 @@ using namespace std;
 void PrintHelp()
 {
     cout << "Usage:" << endl;
-    cout << "\t./pathplanning -r <num-of-robot-vertices> -o <num-of-obstacles>" << endl;
+    cout << "\t./pathplanning -r <num-of-robot-vertices> -o <num-of-obstacles> | -i <csv-input-file>" << endl;
     cout << "\t-r: Number of robot vertices" << endl;
     cout << "\t-o: Number of obstacles" << endl;
     cout << "\t-f: Full screen" << endl;
     cout << "\t-i: CSV input file" << endl;
     cout << "\t-n: Number of nodes in PRM graph" << endl;
     cout << "\t-d: Minimum distance between PRM nodes" << endl;
-    cout << "Example:\n\t./pathplanning -r 3 -o 5 -f -n 500 # For a triangle robot with 5 obstacles in full screen workspace with 500 nodes in PRM" << endl;
+    cout << "\tExample:" << endl;
+    cout << "\t\t# Input CSV file"<< endl;
+    cout << "\t\t$./pathplanning -i inputconfig.xml" << endl << endl;
+    cout << "\t\t# For a triangle robot with 5 obstacles in full screen workspace with 500 nodes in PRM" << endl;
+	cout << "\t\t$./pathplanning -r 3 -o 5 -f -n 500" << endl;
 }
 
 /* Check if a string is a numerical value */

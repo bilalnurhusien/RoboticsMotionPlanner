@@ -1,5 +1,5 @@
 <config>
-    <filename>config.xml</filename>
+    <filename>narrowuconfig.xml</filename>
     	<robot>
         	<points>0,0 50,0 50,150 0,150</points>
         	<position>200,200</position>

@@ -8,7 +8,7 @@ if test -f $DIR/../$PROG; then
     PUSHED=1;
 fi
 
-./pathplanning -i $DIR/configs/narrowbottomconfig.xml -n 700 -f 
+./pathplanning -i $DIR/configs/narrowuconfig.xml -n 700 -f 
 
 if [ "$PUSHED" -eq "1" ]; then
    popd;

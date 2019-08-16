@@ -111,6 +111,14 @@ bool MotionPlanning::CreateRoadMap(uint32_t maxNumOfNodes, uint32_t maxNumOfNeig
     m_rtree.clear();
     m_pGraph->clear();
 
+    //
+    // Decrement by one since the source vertex will be added
+    //
+    if (maxNumOfNodes > 1)
+    {
+        maxNumOfNodes -= 1;
+    }
+
     for (uint32_t totalRetries = 0; (totalRetries < MaxTotalRetries) && !success; ++totalRetries)
     {
         uint32_t i = 0;
